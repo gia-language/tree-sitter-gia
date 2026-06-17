@@ -1,0 +1,296 @@
+================================================================================
+Simple function
+================================================================================
+
+fn greet(name: String) -> String {
+    name
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter name: (identifier) type: (named_type (type_identifier))))
+    return_type: (named_type (type_identifier))
+    body: (block
+      value: (identifier))))
+
+================================================================================
+Impure public function
+================================================================================
+
+public impure fn main(app: App) {
+    impure print("hello")
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (visibility_modifier)
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter name: (identifier) type: (named_type (type_identifier))))
+    body: (block
+      value: (impure_expression
+        (call_expression
+          callee: (identifier)
+          arguments: (argument_list
+            (positional_argument (string_literal))))))))
+
+================================================================================
+Function with where and with clauses
+================================================================================
+
+fn process<T>(items: List<T>) where T: Display with log: Logger -> String {
+    "ok"
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    type_parameters: (type_parameters (type_identifier))
+    parameters: (parameter_list
+      (parameter
+        name: (identifier)
+        type: (generic_type name: (type_identifier) (named_type (type_identifier)))))
+    where_clause: (where_clause
+      (type_constraint
+        parameter: (type_identifier)
+        bound: (trait_bound (type_identifier))))
+    with_clause: (with_clause
+      (capability_parameter name: (identifier) type: (named_type (type_identifier))))
+    return_type: (named_type (type_identifier))
+    body: (block value: (string_literal))))
+
+================================================================================
+Struct declaration
+================================================================================
+
+public struct Point {
+    x: f64,
+    y: f64,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (struct_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    (struct_field name: (identifier) type: (named_type (identifier)))
+    (struct_field name: (identifier) type: (named_type (identifier)))))
+
+================================================================================
+Struct with attribute
+================================================================================
+
+@derive(Json, Eq)
+public struct Task {
+    id: TaskId,
+    title: String,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (struct_declaration
+    (attribute name: (identifier)
+      (attribute_arguments (type_identifier) (type_identifier)))
+    (visibility_modifier)
+    name: (type_identifier)
+    (struct_field name: (identifier) type: (named_type (type_identifier)))
+    (struct_field name: (identifier) type: (named_type (type_identifier)))))
+
+================================================================================
+Enum declaration
+================================================================================
+
+public enum Option<T> {
+    Some(T),
+    None,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (enum_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    type_parameters: (type_parameters (type_identifier))
+    (tuple_variant name: (type_identifier) (named_type (type_identifier)))
+    (unit_variant name: (type_identifier))))
+
+================================================================================
+Actor trait declaration
+================================================================================
+
+public actor trait HubApi {
+    mutator join(id: ClientId, member: Member);
+    reader who() -> List<String>;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (actor_trait_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    (actor_method_signature
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter name: (identifier) type: (named_type (type_identifier)))
+        (parameter name: (identifier) type: (named_type (type_identifier)))))
+    (actor_method_signature
+      name: (identifier)
+      parameters: (parameter_list)
+      return_type: (generic_type name: (type_identifier) (named_type (type_identifier))))))
+
+================================================================================
+Actor declaration
+================================================================================
+
+public actor Counter implements CounterApi {
+    count: u64,
+
+    init() {
+        Self { count: 0 }
+    }
+
+    public mutator increment() {
+        Self { count: self.count + 1 }
+    }
+
+    public reader get() -> u64 {
+        self.count
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (actor_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    implements: (named_type
+      (type_identifier))
+    (actor_field name: (identifier) type: (named_type (identifier)))
+    (actor_init
+      parameters: (parameter_list)
+      body: (block
+        value: (struct_expression
+          name: (type_identifier)
+          (field_initializer name: (identifier) value: (integer_literal)))))
+    (actor_method
+      (visibility_modifier)
+      name: (identifier)
+      parameters: (parameter_list)
+      body: (block
+        value: (struct_expression
+          name: (type_identifier)
+          (field_initializer
+            name: (identifier)
+            value: (binary_expression
+              (field_expression base: (self) name: (identifier))
+              (integer_literal))))))
+    (actor_method
+      (visibility_modifier)
+      name: (identifier)
+      parameters: (parameter_list)
+      return_type: (named_type (identifier))
+      body: (block
+        value: (field_expression base: (self) name: (identifier))))))
+
+================================================================================
+Import declaration
+================================================================================
+
+import ast::{Value, ReplError};
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (import_declaration
+    path: (import_path
+      (identifier)
+      (import_group (type_identifier) (type_identifier)))))
+
+================================================================================
+Impl declaration
+================================================================================
+
+impl Display for Counter {
+    fn show(self: Counter) -> String {
+        "counter"
+    }
+    fn display(self) -> String {
+        "counter"
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (impl_declaration
+    trait_type: (named_type (type_identifier))
+    target_type: (named_type (type_identifier))
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter name: (self) type: (named_type (type_identifier))))
+      return_type: (named_type (type_identifier))
+      body: (block value: (string_literal)))
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (self))
+      return_type: (named_type (type_identifier))
+      body: (block value: (string_literal)))))
+
+================================================================================
+Trait with extends clause
+================================================================================
+
+public actor trait HubApi extends ReadableCounter, WritableCounter {
+    mutator join(id: ClientId);
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (actor_trait_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    extends: (extends_clause
+      (named_type (type_identifier))
+      (named_type (type_identifier)))
+    (actor_method_signature
+      name: (identifier)
+      parameters: (parameter_list
+        (parameter name: (identifier) type: (named_type (type_identifier)))))))
+
+================================================================================
+Actor with multiple implements
+================================================================================
+
+actor Store implements StoreApi, Loggable {
+    tasks: Map<TaskId, Task>,
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (actor_declaration
+    name: (type_identifier)
+    implements: (named_type (type_identifier))
+    implements: (named_type (type_identifier))
+    (actor_field
+      name: (identifier)
+      type: (generic_type
+        name: (type_identifier)
+        (named_type (type_identifier))
+        (named_type (type_identifier))))))

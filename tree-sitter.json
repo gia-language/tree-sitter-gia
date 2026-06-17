@@ -1,0 +1,19 @@
+{
+  "grammars": [
+    {
+      "name": "gia",
+      "camelcase": "Gia",
+      "scope": "source.gia",
+      "path": ".",
+      "file-types": ["gia"],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "folds": "queries/folds.scm"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for the Gia programming language"
+  }
+}

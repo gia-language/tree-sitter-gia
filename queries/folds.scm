@@ -1,0 +1,11 @@
+(block) @fold
+(struct_declaration) @fold
+(enum_declaration) @fold
+(trait_declaration) @fold
+(actor_declaration) @fold
+(actor_trait_declaration) @fold
+(impl_declaration) @fold
+(case_expression) @fold
+(if_expression) @fold
+(list_expression) @fold
+(map_expression) @fold

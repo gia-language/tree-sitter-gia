@@ -1,0 +1,351 @@
+================================================================================
+Pipe expression
+================================================================================
+
+fn f() {
+    src |> lex() |> parse()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (pipe_expression
+        (pipe_expression
+          (identifier)
+          (call_expression callee: (identifier)))
+        (call_expression callee: (identifier))))))
+
+================================================================================
+Field and path access
+================================================================================
+
+fn f() {
+    self.members |> Map::values()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (pipe_expression
+        (field_expression base: (self) name: (identifier))
+        (call_expression
+          callee: (path_expression
+            base: (type_identifier)
+            name: (identifier)))))))
+
+================================================================================
+Send operators
+================================================================================
+
+fn f() {
+    client ~> deliver(msg)
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (send_expression
+        receiver: (identifier)
+        call: (call_expression
+          callee: (identifier)
+          arguments: (argument_list
+            (positional_argument (identifier))))))))
+
+================================================================================
+Impure expression
+================================================================================
+
+fn f() {
+    impure print("hello")
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (impure_expression
+        (call_expression
+          callee: (identifier)
+          arguments: (argument_list
+            (positional_argument (string_literal))))))))
+
+================================================================================
+Labeled argument
+================================================================================
+
+fn f() {
+    print("> ", end: "")
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (call_expression
+        callee: (identifier)
+        arguments: (argument_list
+          (positional_argument (string_literal))
+          (labeled_argument label: (identifier) value: (string_literal)))))))
+
+================================================================================
+If expression
+================================================================================
+
+fn f() {
+    if x > 0 {
+        x
+    } else {
+        0
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (if_expression
+        condition: (binary_expression (identifier) (integer_literal))
+        then: (block value: (identifier))
+        else: (block value: (integer_literal))))))
+
+================================================================================
+Case expression
+================================================================================
+
+fn f() {
+    case x {
+        Some(v) => v,
+        None => 0,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (variant_pattern name: (type_identifier) (identifier))
+          body: (identifier))
+        (case_arm
+          pattern: (variant_pattern name: (type_identifier))
+          body: (integer_literal))))))
+
+================================================================================
+Defer statement
+================================================================================
+
+fn cleanup() {
+    defer impure DatabaseConnection::close(conn);
+    work();
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (defer_statement
+        value: (impure_expression
+          (call_expression
+            callee: (path_expression
+              base: (type_identifier)
+              name: (identifier))
+            arguments: (argument_list (positional_argument (identifier))))))
+      (expression_statement
+        (call_expression callee: (identifier))))))
+
+================================================================================
+Struct expression with functional update
+================================================================================
+
+fn f() {
+    Self { ..self, count: 1 }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (struct_expression
+        name: (type_identifier)
+        (struct_base (self))
+        (field_initializer name: (identifier) value: (integer_literal))))))
+
+================================================================================
+List expression
+================================================================================
+
+fn f() {
+    [1, 2, ..rest]
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (list_expression
+        (integer_literal)
+        (integer_literal)
+        (spread_element (identifier))))))
+
+================================================================================
+Map expression
+================================================================================
+
+fn f() {
+    #{ "key": value }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (map_expression
+        (map_entry key: (string_literal) value: (identifier))))))
+
+================================================================================
+Closure expression
+================================================================================
+
+fn f() {
+    List::map(fn(x) { x + 1 })
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (call_expression
+        callee: (path_expression base: (type_identifier) name: (identifier))
+        arguments: (argument_list
+          (positional_argument
+            (closure_expression
+              (identifier)
+              body: (block
+                value: (binary_expression
+                  (identifier)
+                  (integer_literal))))))))))
+
+================================================================================
+Closure with tuple parameter
+================================================================================
+
+fn f() {
+    Result::then(fn((val, rest)) { val })
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (call_expression
+        callee: (path_expression base: (type_identifier) name: (identifier))
+        arguments: (argument_list
+          (positional_argument
+            (closure_expression
+              (tuple_pattern (identifier) (identifier))
+              body: (block value: (identifier)))))))))
+
+================================================================================
+Tuple expression
+================================================================================
+
+fn f() {
+    (a, b)
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (tuple_expression (identifier) (identifier)))))
+
+================================================================================
+Loop with break
+================================================================================
+
+fn f() {
+    loop {
+        break 42
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (loop_expression
+        body: (block
+          value: (break_expression (integer_literal)))))))
+
+================================================================================
+Binary expressions with correct precedence
+================================================================================
+
+fn f() {
+    a + b * c == d || e
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (binary_expression
+        (binary_expression
+          (binary_expression
+            (identifier)
+            (binary_expression (identifier) (identifier)))
+          (identifier))
+        (identifier)))))

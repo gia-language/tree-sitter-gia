@@ -1,0 +1,175 @@
+================================================================================
+Wildcard pattern
+================================================================================
+
+fn f() {
+    case x { _ => 0 }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm pattern: (wildcard_pattern) body: (integer_literal))))))
+
+================================================================================
+Binding pattern (identifier)
+================================================================================
+
+fn f() {
+    case x { y => y }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (identifier)
+          body: (identifier))))))
+
+================================================================================
+List pattern with rest
+================================================================================
+
+fn f() {
+    case tokens {
+        [head, ..tail] => head,
+        [] => 0,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (list_pattern
+            (identifier)
+            (rest_pattern (identifier)))
+          body: (identifier))
+        (case_arm
+          pattern: (list_pattern)
+          body: (integer_literal))))))
+
+================================================================================
+Tuple pattern in let
+================================================================================
+
+fn f() {
+    let (a, b) = pair;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (let_statement
+        pattern: (tuple_pattern (identifier) (identifier))
+        value: (identifier)))))
+
+================================================================================
+Nested variant + tuple pattern
+================================================================================
+
+fn f() {
+    case result {
+        Ok((val, rest)) => val,
+        Error(e) => 0,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (variant_pattern
+            name: (type_identifier)
+            (tuple_pattern (identifier) (identifier)))
+          body: (identifier))
+        (case_arm
+          pattern: (variant_pattern
+            name: (type_identifier)
+            (identifier))
+          body: (integer_literal))))))
+
+================================================================================
+Struct pattern
+================================================================================
+
+fn f() {
+    case point {
+        Point { x, y: 0 } => x,
+        Point { .. } => 0,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (struct_pattern
+            name: (type_identifier)
+            (field_pattern name: (identifier))
+            (field_pattern name: (identifier) pattern: (integer_literal)))
+          body: (identifier))
+        (case_arm
+          pattern: (struct_pattern
+            name: (type_identifier)
+            (struct_rest_pattern))
+          body: (integer_literal))))))
+
+================================================================================
+Literal patterns
+================================================================================
+
+fn f() {
+    case x {
+        0 => "zero",
+        1 => "one",
+        _ => "other",
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm pattern: (integer_literal) body: (string_literal))
+        (case_arm pattern: (integer_literal) body: (string_literal))
+        (case_arm pattern: (wildcard_pattern) body: (string_literal))))))

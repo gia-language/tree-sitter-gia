@@ -1,0 +1,43 @@
+{
+  "name": "tree-sitter-gia",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for the Gia programming language",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "tree-sitter",
+    "gia"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gia-language/gia-treesitter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gia-language/gia-treesitter/issues"
+  },
+  "homepage": "https://github.com/gia-language/gia-treesitter#readme",
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "build": "node-gyp rebuild",
+    "test": "tree-sitter test",
+    "parse": "tree-sitter parse"
+  },
+  "dependencies": {
+    "nan": "^2.22.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.25.0"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.gia",
+      "file-types": [
+        "gia"
+      ],
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "folds": "queries/folds.scm"
+    }
+  ]
+}
