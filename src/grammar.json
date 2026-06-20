@@ -1586,24 +1586,58 @@
           "value": "impl"
         },
         {
-          "type": "FIELD",
-          "name": "trait_type",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_type_annotation"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "type_parameters",
+              "content": {
+                "type": "SYMBOL",
+                "name": "type_parameters"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
-          "type": "STRING",
-          "value": "for"
-        },
-        {
-          "type": "FIELD",
-          "name": "target_type",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_type_annotation"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "FIELD",
+                  "name": "trait_type",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_type_annotation"
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": "for"
+                },
+                {
+                  "type": "FIELD",
+                  "name": "target_type",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "_type_annotation"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "FIELD",
+              "name": "target_type",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_type_annotation"
+              }
+            }
+          ]
         },
         {
           "type": "CHOICE",

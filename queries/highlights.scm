@@ -76,6 +76,12 @@
 (generic_type name: (type_identifier) @type)
 (function_type "fn" @type.builtin)
 
+((named_type (identifier) @type.builtin)
+  (#any-of? @type.builtin
+    "bool" "u8" "u16" "u32" "u64" "u128" "usize"
+    "i8" "i16" "i32" "i64" "i128" "isize" "f32" "f64")
+  (#set! priority 110))
+
 ; Self is a type keyword
 ((type_identifier) @type.builtin
   (#eq? @type.builtin "Self"))

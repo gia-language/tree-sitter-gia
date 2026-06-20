@@ -211,9 +211,15 @@ module.exports = {
   impl_declaration: ($) =>
     seq(
       "impl",
-      field("trait_type", $._type_annotation),
-      "for",
-      field("target_type", $._type_annotation),
+      optional(field("type_parameters", $.type_parameters)),
+      choice(
+        seq(
+          field("trait_type", $._type_annotation),
+          "for",
+          field("target_type", $._type_annotation)
+        ),
+        field("target_type", $._type_annotation)
+      ),
       optional(field("where_clause", $.where_clause)),
       "{",
       repeat($.function_declaration),

@@ -252,6 +252,63 @@ impl Display for Counter {
       body: (block value: (string_literal)))))
 
 ================================================================================
+Generic inherent impl declaration
+================================================================================
+
+impl<T> List<T> {
+    public fn is_empty(self) -> bool {
+        true
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (impl_declaration
+    type_parameters: (type_parameters (type_identifier))
+    target_type: (generic_type
+      name: (type_identifier)
+      (named_type (type_identifier)))
+    (function_declaration
+      (visibility_modifier)
+      name: (identifier)
+      parameters: (parameter_list
+        (self))
+      return_type: (named_type (identifier))
+      body: (block value: (boolean_literal)))))
+
+================================================================================
+Generic trait impl declaration
+================================================================================
+
+impl<T> Display<T> for Box<T> {
+    fn display(self) -> T {
+        self.value
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (impl_declaration
+    type_parameters: (type_parameters (type_identifier))
+    trait_type: (generic_type
+      name: (type_identifier)
+      (named_type (type_identifier)))
+    target_type: (generic_type
+      name: (type_identifier)
+      (named_type (type_identifier)))
+    (function_declaration
+      name: (identifier)
+      parameters: (parameter_list
+        (self))
+      return_type: (named_type (type_identifier))
+      body: (block
+        value: (field_expression
+          base: (self)
+          name: (identifier))))))
+
+================================================================================
 Trait with extends clause
 ================================================================================
 
