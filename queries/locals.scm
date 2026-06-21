@@ -7,6 +7,7 @@
 ; ---------------------------------------------------------------------------
 
 (function_declaration) @local.scope
+(actor_handler) @local.scope
 (closure_expression) @local.scope
 (block) @local.scope
 (if_expression) @local.scope

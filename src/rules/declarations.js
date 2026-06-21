@@ -40,7 +40,7 @@ module.exports = {
       $.enum_declaration,
       $.trait_declaration,
       $.actor_trait_declaration,
-      $.actor_declaration,
+      $.actor_struct_declaration,
       $.impl_declaration
     ),
 
@@ -128,7 +128,7 @@ module.exports = {
   method_signature: ($) =>
     seq(
       optional("impure"),
-      choice("fn", "mutator", "reader"),
+      "fn",
       field("name", $.identifier),
       optional(field("type_parameters", $.type_parameters)),
       field("parameters", $.parameter_list),
@@ -146,7 +146,6 @@ module.exports = {
       field("name", choice($.type_identifier, $.identifier)),
       optional(field("type_parameters", $.type_parameters)),
       optional(field("extends", $.extends_clause)),
-      optional(field("where_clause", $.where_clause)),
       "{",
       repeat($.actor_method_signature),
       "}"
@@ -157,52 +156,42 @@ module.exports = {
       optional("impure"),
       choice("mutator", "reader"),
       field("name", $.identifier),
-      field("parameters", $.parameter_list),
+      field("parameters", $.actor_parameter_list),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
       ";"
     ),
 
-  actor_declaration: ($) =>
+  actor_struct_declaration: ($) =>
     seq(
       repeat($.attribute),
       optional($.visibility_modifier),
       "actor",
+      "struct",
       field("name", $.type_identifier),
-      optional(
-        seq("implements", field("implements", commaSep1($._type_annotation)))
-      ),
+      optional(field("type_parameters", $.type_parameters)),
       "{",
-      repeat($.actor_field),
-      optional($.actor_init),
-      repeat($.actor_method),
+      repeat($.struct_field),
       "}"
     ),
 
-  actor_field: ($) =>
+  actor_parameter_list: ($) =>
     seq(
-      field("name", $.identifier),
-      ":",
-      field("type", $._type_annotation),
-      ","
+      "(",
+      $.actor_self_parameter,
+      optional(seq(",", commaSep1($.parameter), optional(","))),
+      ")"
     ),
 
-  actor_init: ($) =>
-    seq(
-      "init",
-      field("parameters", $.parameter_list),
-      field("body", $.block)
-    ),
+  actor_self_parameter: ($) =>
+    seq($.self, optional(seq(":", field("type", $._type_annotation)))),
 
-  actor_method: ($) =>
+  actor_handler: ($) =>
     seq(
-      optional($.visibility_modifier),
       optional("impure"),
       choice("mutator", "reader"),
       field("name", $.identifier),
-      optional(field("type_parameters", $.type_parameters)),
-      field("parameters", $.parameter_list),
-      optional(field("where_clause", $.where_clause)),
+      field("parameters", $.actor_parameter_list),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
       field("body", $.block)
@@ -222,7 +211,7 @@ module.exports = {
       ),
       optional(field("where_clause", $.where_clause)),
       "{",
-      repeat($.function_declaration),
+      repeat(choice($.function_declaration, $.actor_handler)),
       "}"
     ),
 };

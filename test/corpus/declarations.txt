@@ -12,8 +12,12 @@ fn greet(name: String) -> String {
   (function_declaration
     name: (identifier)
     parameters: (parameter_list
-      (parameter name: (identifier) type: (named_type (type_identifier))))
-    return_type: (named_type (type_identifier))
+      (parameter
+        name: (identifier)
+        type: (named_type
+          (type_identifier))))
+    return_type: (named_type
+      (type_identifier))
     body: (block
       value: (identifier))))
 
@@ -32,13 +36,17 @@ public impure fn main(app: App) {
     (visibility_modifier)
     name: (identifier)
     parameters: (parameter_list
-      (parameter name: (identifier) type: (named_type (type_identifier))))
+      (parameter
+        name: (identifier)
+        type: (named_type
+          (type_identifier))))
     body: (block
       value: (impure_expression
         (call_expression
           callee: (identifier)
           arguments: (argument_list
-            (positional_argument (string_literal))))))))
+            (positional_argument
+              (string_literal))))))))
 
 ================================================================================
 Function with where and with clauses
@@ -53,19 +61,29 @@ fn process<T>(items: List<T>) where T: Display with log: Logger -> String {
 (source_file
   (function_declaration
     name: (identifier)
-    type_parameters: (type_parameters (type_identifier))
+    type_parameters: (type_parameters
+      (type_identifier))
     parameters: (parameter_list
       (parameter
         name: (identifier)
-        type: (generic_type name: (type_identifier) (named_type (type_identifier)))))
+        type: (generic_type
+          name: (type_identifier)
+          (named_type
+            (type_identifier)))))
     where_clause: (where_clause
       (type_constraint
         parameter: (type_identifier)
-        bound: (trait_bound (type_identifier))))
+        bound: (trait_bound
+          (type_identifier))))
     with_clause: (with_clause
-      (capability_parameter name: (identifier) type: (named_type (type_identifier))))
-    return_type: (named_type (type_identifier))
-    body: (block value: (string_literal))))
+      (capability_parameter
+        name: (identifier)
+        type: (named_type
+          (type_identifier))))
+    return_type: (named_type
+      (type_identifier))
+    body: (block
+      value: (string_literal))))
 
 ================================================================================
 Struct declaration
@@ -82,8 +100,14 @@ public struct Point {
   (struct_declaration
     (visibility_modifier)
     name: (type_identifier)
-    (struct_field name: (identifier) type: (named_type (identifier)))
-    (struct_field name: (identifier) type: (named_type (identifier)))))
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (identifier)))
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (identifier)))))
 
 ================================================================================
 Struct with attribute
@@ -99,12 +123,21 @@ public struct Task {
 
 (source_file
   (struct_declaration
-    (attribute name: (identifier)
-      (attribute_arguments (type_identifier) (type_identifier)))
+    (attribute
+      name: (identifier)
+      (attribute_arguments
+        (type_identifier)
+        (type_identifier)))
     (visibility_modifier)
     name: (type_identifier)
-    (struct_field name: (identifier) type: (named_type (type_identifier)))
-    (struct_field name: (identifier) type: (named_type (type_identifier)))))
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (type_identifier)))
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (type_identifier)))))
 
 ================================================================================
 Enum declaration
@@ -121,17 +154,22 @@ public enum Option<T> {
   (enum_declaration
     (visibility_modifier)
     name: (type_identifier)
-    type_parameters: (type_parameters (type_identifier))
-    (tuple_variant name: (type_identifier) (named_type (type_identifier)))
-    (unit_variant name: (type_identifier))))
+    type_parameters: (type_parameters
+      (type_identifier))
+    (tuple_variant
+      name: (type_identifier)
+      (named_type
+        (type_identifier)))
+    (unit_variant
+      name: (type_identifier))))
 
 ================================================================================
 Actor trait declaration
 ================================================================================
 
 public actor trait HubApi {
-    mutator join(id: ClientId, member: Member);
-    reader who() -> List<String>;
+    mutator join(self, id: ClientId, member: Member);
+    reader who(self) -> List<String>;
 }
 
 --------------------------------------------------------------------------------
@@ -142,30 +180,52 @@ public actor trait HubApi {
     name: (type_identifier)
     (actor_method_signature
       name: (identifier)
-      parameters: (parameter_list
-        (parameter name: (identifier) type: (named_type (type_identifier)))
-        (parameter name: (identifier) type: (named_type (type_identifier)))))
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self))
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (type_identifier)))
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (type_identifier)))))
     (actor_method_signature
       name: (identifier)
-      parameters: (parameter_list)
-      return_type: (generic_type name: (type_identifier) (named_type (type_identifier))))))
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self)))
+      return_type: (generic_type
+        name: (type_identifier)
+        (named_type
+          (type_identifier))))))
 
 ================================================================================
-Actor declaration
+Actor struct, constructor, and protocol impl
 ================================================================================
 
-public actor Counter implements CounterApi {
+public actor struct Counter {
     count: u64,
+}
 
-    init() {
+impl Counter {
+    public fn new() -> Self {
         Self { count: 0 }
     }
+}
 
-    public mutator increment() {
+public actor trait CounterApi {
+    mutator increment(self);
+    reader get(self) -> u64;
+}
+
+impl CounterApi for Counter {
+    mutator increment(self) {
         Self { count: self.count + 1 }
     }
 
-    public reader get() -> u64 {
+    reader get(self) -> u64 {
         self.count
     }
 }
@@ -173,37 +233,74 @@ public actor Counter implements CounterApi {
 --------------------------------------------------------------------------------
 
 (source_file
-  (actor_declaration
+  (actor_struct_declaration
     (visibility_modifier)
     name: (type_identifier)
-    implements: (named_type
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (identifier))))
+  (impl_declaration
+    target_type: (named_type
       (type_identifier))
-    (actor_field name: (identifier) type: (named_type (identifier)))
-    (actor_init
-      parameters: (parameter_list)
-      body: (block
-        value: (struct_expression
-          name: (type_identifier)
-          (field_initializer name: (identifier) value: (integer_literal)))))
-    (actor_method
+    (function_declaration
       (visibility_modifier)
       name: (identifier)
       parameters: (parameter_list)
+      return_type: (named_type
+        (type_identifier))
+      body: (block
+        value: (struct_expression
+          name: (type_identifier)
+          (field_initializer
+            name: (identifier)
+            value: (integer_literal))))))
+  (actor_trait_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    (actor_method_signature
+      name: (identifier)
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self))))
+    (actor_method_signature
+      name: (identifier)
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self)))
+      return_type: (named_type
+        (identifier))))
+  (impl_declaration
+    trait_type: (named_type
+      (type_identifier))
+    target_type: (named_type
+      (type_identifier))
+    (actor_handler
+      name: (identifier)
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self)))
       body: (block
         value: (struct_expression
           name: (type_identifier)
           (field_initializer
             name: (identifier)
             value: (binary_expression
-              (field_expression base: (self) name: (identifier))
+              (field_expression
+                base: (self)
+                name: (identifier))
               (integer_literal))))))
-    (actor_method
-      (visibility_modifier)
+    (actor_handler
       name: (identifier)
-      parameters: (parameter_list)
-      return_type: (named_type (identifier))
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self)))
+      return_type: (named_type
+        (identifier))
       body: (block
-        value: (field_expression base: (self) name: (identifier))))))
+        value: (field_expression
+          base: (self)
+          name: (identifier))))))
 
 ================================================================================
 Import declaration
@@ -217,7 +314,9 @@ import ast::{Value, ReplError};
   (import_declaration
     path: (import_path
       (identifier)
-      (import_group (type_identifier) (type_identifier)))))
+      (import_group
+        (type_identifier)
+        (type_identifier)))))
 
 ================================================================================
 Impl declaration
@@ -236,20 +335,29 @@ impl Display for Counter {
 
 (source_file
   (impl_declaration
-    trait_type: (named_type (type_identifier))
-    target_type: (named_type (type_identifier))
+    trait_type: (named_type
+      (type_identifier))
+    target_type: (named_type
+      (type_identifier))
     (function_declaration
       name: (identifier)
       parameters: (parameter_list
-        (parameter name: (self) type: (named_type (type_identifier))))
-      return_type: (named_type (type_identifier))
-      body: (block value: (string_literal)))
+        (parameter
+          name: (self)
+          type: (named_type
+            (type_identifier))))
+      return_type: (named_type
+        (type_identifier))
+      body: (block
+        value: (string_literal)))
     (function_declaration
       name: (identifier)
       parameters: (parameter_list
         (self))
-      return_type: (named_type (type_identifier))
-      body: (block value: (string_literal)))))
+      return_type: (named_type
+        (type_identifier))
+      body: (block
+        value: (string_literal)))))
 
 ================================================================================
 Generic inherent impl declaration
@@ -265,17 +373,21 @@ impl<T> List<T> {
 
 (source_file
   (impl_declaration
-    type_parameters: (type_parameters (type_identifier))
+    type_parameters: (type_parameters
+      (type_identifier))
     target_type: (generic_type
       name: (type_identifier)
-      (named_type (type_identifier)))
+      (named_type
+        (type_identifier)))
     (function_declaration
       (visibility_modifier)
       name: (identifier)
       parameters: (parameter_list
         (self))
-      return_type: (named_type (identifier))
-      body: (block value: (boolean_literal)))))
+      return_type: (named_type
+        (identifier))
+      body: (block
+        value: (boolean_literal)))))
 
 ================================================================================
 Generic trait impl declaration
@@ -291,18 +403,22 @@ impl<T> Display<T> for Box<T> {
 
 (source_file
   (impl_declaration
-    type_parameters: (type_parameters (type_identifier))
+    type_parameters: (type_parameters
+      (type_identifier))
     trait_type: (generic_type
       name: (type_identifier)
-      (named_type (type_identifier)))
+      (named_type
+        (type_identifier)))
     target_type: (generic_type
       name: (type_identifier)
-      (named_type (type_identifier)))
+      (named_type
+        (type_identifier)))
     (function_declaration
       name: (identifier)
       parameters: (parameter_list
         (self))
-      return_type: (named_type (type_identifier))
+      return_type: (named_type
+        (type_identifier))
       body: (block
         value: (field_expression
           base: (self)
@@ -313,7 +429,7 @@ Trait with extends clause
 ================================================================================
 
 public actor trait HubApi extends ReadableCounter, WritableCounter {
-    mutator join(id: ClientId);
+    mutator join(self, id: ClientId);
 }
 
 --------------------------------------------------------------------------------
@@ -323,31 +439,51 @@ public actor trait HubApi extends ReadableCounter, WritableCounter {
     (visibility_modifier)
     name: (type_identifier)
     extends: (extends_clause
-      (named_type (type_identifier))
-      (named_type (type_identifier)))
+      (named_type
+        (type_identifier))
+      (named_type
+        (type_identifier)))
     (actor_method_signature
       name: (identifier)
-      parameters: (parameter_list
-        (parameter name: (identifier) type: (named_type (type_identifier)))))))
+      parameters: (actor_parameter_list
+        (actor_self_parameter
+          (self))
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (type_identifier)))))))
 
 ================================================================================
-Actor with multiple implements
+Actor struct with multiple protocol impls
 ================================================================================
 
-actor Store implements StoreApi, Loggable {
+actor struct Store {
     tasks: Map<TaskId, Task>,
 }
+
+impl StoreApi for Store {}
+impl Loggable for Store {}
 
 --------------------------------------------------------------------------------
 
 (source_file
-  (actor_declaration
+  (actor_struct_declaration
     name: (type_identifier)
-    implements: (named_type (type_identifier))
-    implements: (named_type (type_identifier))
-    (actor_field
+    (struct_field
       name: (identifier)
       type: (generic_type
         name: (type_identifier)
-        (named_type (type_identifier))
-        (named_type (type_identifier))))))
+        (named_type
+          (type_identifier))
+        (named_type
+          (type_identifier)))))
+  (impl_declaration
+    trait_type: (named_type
+      (type_identifier))
+    target_type: (named_type
+      (type_identifier)))
+  (impl_declaration
+    trait_type: (named_type
+      (type_identifier))
+    target_type: (named_type
+      (type_identifier))))

@@ -2,7 +2,7 @@
 (struct_declaration) @fold
 (enum_declaration) @fold
 (trait_declaration) @fold
-(actor_declaration) @fold
+(actor_struct_declaration) @fold
 (actor_trait_declaration) @fold
 (impl_declaration) @fold
 (case_expression) @fold

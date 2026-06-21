@@ -25,7 +25,6 @@
   "mutator"
   "reader"
   "import"
-  "init"
   "defer"
 ] @keyword
 
@@ -43,7 +42,7 @@
 
 (async_expression "async" @keyword.coroutine)
 
-[ "where" "with" "implements" "for" ] @keyword
+[ "where" "with" "for" ] @keyword
 
 ; ---------------------------------------------------------------------------
 ; Operators
@@ -91,12 +90,12 @@
 ; ---------------------------------------------------------------------------
 
 (function_declaration name: (identifier) @function)
-(actor_method name: (identifier) @function.method)
+(actor_handler name: (identifier) @function.method)
 (actor_method_signature name: (identifier) @function.method)
 (trait_declaration name: (type_identifier) @type)
 (struct_declaration name: (type_identifier) @type)
 (enum_declaration name: (type_identifier) @type)
-(actor_declaration name: (type_identifier) @type)
+(actor_struct_declaration name: (type_identifier) @type)
 (actor_trait_declaration name: (type_identifier) @type)
 
 
@@ -124,7 +123,6 @@
 
 ; Struct fields
 (struct_field name: (identifier) @variable.member)
-(actor_field name: (identifier) @variable.member)
 (field_expression name: (identifier) @variable.member)
 (field_initializer name: (identifier) @variable.member)
 (field_pattern name: (identifier) @variable.member)
