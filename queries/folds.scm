@@ -1,4 +1,5 @@
 (block) @fold
+(type_alias_declaration) @fold
 (struct_declaration) @fold
 (enum_declaration) @fold
 (trait_declaration) @fold

@@ -21,6 +21,7 @@
   "trait"
   "struct"
   "enum"
+  "type"
   "impl"
   "mutator"
   "reader"
@@ -93,6 +94,7 @@
 (actor_handler name: (identifier) @function.method)
 (actor_method_signature name: (identifier) @function.method)
 (trait_declaration name: (type_identifier) @type)
+(type_alias_declaration name: (type_identifier) @type)
 (struct_declaration name: (type_identifier) @type)
 (enum_declaration name: (type_identifier) @type)
 (actor_struct_declaration name: (type_identifier) @type)

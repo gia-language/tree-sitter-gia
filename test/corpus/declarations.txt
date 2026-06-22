@@ -425,6 +425,41 @@ impl<T> Display<T> for Box<T> {
           name: (identifier))))))
 
 ================================================================================
+Type alias declarations
+================================================================================
+
+type SomeA = SomeExistingStruct;
+public type MyError<T> = Result<T, MyError>;
+package type Pair = (String, u64)
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (type_alias_declaration
+    name: (type_identifier)
+    target: (named_type
+      (type_identifier)))
+  (type_alias_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    type_parameters: (type_parameters
+      (type_identifier))
+    target: (generic_type
+      name: (type_identifier)
+      (named_type
+        (type_identifier))
+      (named_type
+        (type_identifier))))
+  (type_alias_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    target: (tuple_type
+      (named_type
+        (type_identifier))
+      (named_type
+        (identifier)))))
+
+================================================================================
 Trait with extends clause
 ================================================================================
 

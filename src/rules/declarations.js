@@ -36,6 +36,7 @@ module.exports = {
   _declaration: ($) =>
     choice(
       $.function_declaration,
+      $.type_alias_declaration,
       $.struct_declaration,
       $.enum_declaration,
       $.trait_declaration,
@@ -59,6 +60,18 @@ module.exports = {
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
       field("body", $.block)
+    ),
+
+  type_alias_declaration: ($) =>
+    seq(
+      repeat($.attribute),
+      optional($.visibility_modifier),
+      "type",
+      field("name", $.type_identifier),
+      optional(field("type_parameters", $.type_parameters)),
+      "=",
+      field("target", $._type_annotation),
+      optional(";")
     ),
 
   struct_declaration: ($) =>
