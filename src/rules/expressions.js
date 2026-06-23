@@ -8,12 +8,13 @@ const PRECEDENCE = {
   COMPARISON: 4,
   ADD: 5,
   MULTIPLY: 6,
-  RANGE: 7,
-  PIPE: 8,
-  SEND: 9,
-  FIELD: 10,
-  CALL: 11,
-  UNARY: 12,
+  POWER: 7,
+  RANGE: 8,
+  PIPE: 9,
+  SEND: 10,
+  FIELD: 11,
+  CALL: 12,
+  UNARY: 13,
 };
 
 module.exports = {
@@ -100,6 +101,7 @@ module.exports = {
       prec.left(PRECEDENCE.ADD, seq($._expression, "+", $._expression)),
       prec.left(PRECEDENCE.ADD, seq($._expression, "-", $._expression)),
       prec.left(PRECEDENCE.MULTIPLY, seq($._expression, "*", $._expression)),
+      prec.right(PRECEDENCE.POWER, seq($._expression, "**", $._expression)),
       prec.left(PRECEDENCE.MULTIPLY, seq($._expression, "/", $._expression)),
       prec.left(PRECEDENCE.MULTIPLY, seq($._expression, "%", $._expression))
     ),

@@ -349,3 +349,27 @@ fn f() {
             (binary_expression (identifier) (identifier)))
           (identifier))
         (identifier)))))
+
+================================================================================
+Exponentiation (**) is right-associative and binds tighter than *
+================================================================================
+
+fn f() {
+    a ** b ** c * d
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      value: (binary_expression
+        (binary_expression
+          (identifier)
+          (binary_expression
+            (identifier)
+            (identifier)))
+        (identifier)))))
+
