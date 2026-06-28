@@ -34,6 +34,7 @@ pub impure fn main(app: App) {
 (source_file
   (function_declaration
     (visibility_modifier)
+    (function_purity_modifier)
     name: (identifier)
     parameters: (parameter_list
       (parameter
@@ -46,7 +47,43 @@ pub impure fn main(app: App) {
           callee: (identifier)
           arguments: (argument_list
             (positional_argument
-              (string_literal))))))))
+        (string_literal))))))))
+
+================================================================================
+Pure function and function-type parameter
+================================================================================
+
+pub pure fn apply(mapper: pure fn(u64) -> u64, value: u64) -> u64 {
+    mapper(value)
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (visibility_modifier)
+    (function_purity_modifier)
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter
+        name: (identifier)
+        type: (function_type
+          (named_type
+            (identifier))
+          (named_type
+            (identifier))))
+      (parameter
+        name: (identifier)
+        type: (named_type
+          (identifier))))
+    return_type: (named_type
+      (identifier))
+    body: (block
+      value: (call_expression
+        callee: (identifier)
+        arguments: (argument_list
+          (positional_argument
+            (identifier)))))))
 
 ================================================================================
 Function with where and with clauses

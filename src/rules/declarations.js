@@ -65,11 +65,13 @@ module.exports = {
 
   visibility_modifier: (_$) => choice("pub", "mod", "pkg"),
 
+  function_purity_modifier: (_$) => choice("pure", "impure"),
+
   function_declaration: ($) =>
     seq(
       repeat($.attribute),
       optional($.visibility_modifier),
-      optional("impure"),
+      optional($.function_purity_modifier),
       "fn",
       field("name", $.identifier),
       optional(field("type_parameters", $.type_parameters)),
@@ -158,7 +160,7 @@ module.exports = {
 
   method_signature: ($) =>
     seq(
-      optional("impure"),
+      optional($.function_purity_modifier),
       "fn",
       field("name", $.identifier),
       optional(field("type_parameters", $.type_parameters)),
@@ -184,7 +186,7 @@ module.exports = {
 
   actor_method_signature: ($) =>
     seq(
-      optional("impure"),
+      optional($.function_purity_modifier),
       choice("mutator", "reader"),
       field("name", $.identifier),
       field("parameters", $.actor_parameter_list),
@@ -219,7 +221,7 @@ module.exports = {
 
   actor_handler: ($) =>
     seq(
-      optional("impure"),
+      optional($.function_purity_modifier),
       choice("mutator", "reader"),
       field("name", $.identifier),
       field("parameters", $.actor_parameter_list),

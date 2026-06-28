@@ -16,6 +16,7 @@
 
 [
   "fn"
+  "pure"
   "impure"
   "actor"
   "trait"

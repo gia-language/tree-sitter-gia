@@ -428,6 +428,19 @@
         }
       ]
     },
+    "function_purity_modifier": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "pure"
+        },
+        {
+          "type": "STRING",
+          "value": "impure"
+        }
+      ]
+    },
     "function_declaration": {
       "type": "SEQ",
       "members": [
@@ -454,8 +467,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "impure"
+              "type": "SYMBOL",
+              "name": "function_purity_modifier"
             },
             {
               "type": "BLANK"
@@ -1119,8 +1132,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "impure"
+              "type": "SYMBOL",
+              "name": "function_purity_modifier"
             },
             {
               "type": "BLANK"
@@ -1322,8 +1335,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "impure"
+              "type": "SYMBOL",
+              "name": "function_purity_modifier"
             },
             {
               "type": "BLANK"
@@ -1589,8 +1602,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "impure"
+              "type": "SYMBOL",
+              "name": "function_purity_modifier"
             },
             {
               "type": "BLANK"
@@ -3511,6 +3524,27 @@
     "function_type": {
       "type": "SEQ",
       "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "pure"
+                },
+                {
+                  "type": "STRING",
+                  "value": "impure"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
         {
           "type": "STRING",
           "value": "fn"
