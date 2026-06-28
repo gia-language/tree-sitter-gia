@@ -12,26 +12,44 @@ module.exports = {
       ")"
     ),
 
-  import_declaration: ($) => seq("import", field("path", $.import_path), ";"),
+  import_declaration: ($) =>
+    seq(
+      optional($.visibility_modifier),
+      "import",
+      field("path", $.import_path),
+      ";"
+    ),
 
   import_path: ($) =>
-    choice(
-      seq(
-        $.identifier,
-        repeat(seq("::", $.identifier)),
-        "::",
-        $.import_group
-      ),
-      seq($.identifier, repeat(seq("::", $.identifier)))
+    seq(
+      $.import_segment,
+      repeat(seq("::", $.import_segment)),
+      optional(seq("::", $.import_group))
     ),
+
+  import_segment: ($) => choice($.identifier, $.type_identifier, "mod", "pkg"),
 
   import_group: ($) =>
     seq(
       "{",
-      commaSep(choice($.identifier, $.type_identifier)),
+      commaSep($.import_item),
       optional(","),
       "}"
     ),
+
+  import_item: ($) =>
+    seq(
+      choice($.identifier, $.type_identifier, "self"),
+      optional(
+        seq(
+          $._import_alias,
+          field("alias", choice($.identifier, $.type_identifier))
+        )
+      ),
+      optional(seq("::", $.import_group))
+    ),
+
+  _import_alias: (_$) => token(prec(1, "as")),
 
   _declaration: ($) =>
     choice(
@@ -45,7 +63,7 @@ module.exports = {
       $.impl_declaration
     ),
 
-  visibility_modifier: (_$) => choice("public", "package", "internal"),
+  visibility_modifier: (_$) => choice("pub", "mod", "pkg"),
 
   function_declaration: ($) =>
     seq(

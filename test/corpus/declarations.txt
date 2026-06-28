@@ -22,10 +22,10 @@ fn greet(name: String) -> String {
       value: (identifier))))
 
 ================================================================================
-Impure public function
+Impure pub function
 ================================================================================
 
-public impure fn main(app: App) {
+pub impure fn main(app: App) {
     impure print("hello")
 }
 
@@ -89,7 +89,7 @@ fn process<T>(items: List<T>) where T: Display with log: Logger -> String {
 Struct declaration
 ================================================================================
 
-public struct Point {
+pub struct Point {
     x: f64,
     y: f64,
 }
@@ -114,7 +114,7 @@ Struct with attribute
 ================================================================================
 
 @derive(Json, Eq)
-public struct Task {
+pub struct Task {
     id: TaskId,
     title: String,
 }
@@ -143,7 +143,7 @@ public struct Task {
 Enum declaration
 ================================================================================
 
-public enum Option<T> {
+pub enum Option<T> {
     Some(T),
     None,
 }
@@ -167,7 +167,7 @@ public enum Option<T> {
 Actor trait declaration
 ================================================================================
 
-public actor trait HubApi {
+pub actor trait HubApi {
     mutator join(self, id: ClientId, member: Member);
     reader who(self) -> List<String>;
 }
@@ -205,17 +205,17 @@ public actor trait HubApi {
 Actor struct, constructor, and protocol impl
 ================================================================================
 
-public actor struct Counter {
+pub actor struct Counter {
     count: u64,
 }
 
 impl Counter {
-    public fn new() -> Self {
+    pub fn new() -> Self {
         Self { count: 0 }
     }
 }
 
-public actor trait CounterApi {
+pub actor trait CounterApi {
     mutator increment(self);
     reader get(self) -> u64;
 }
@@ -306,17 +306,27 @@ impl CounterApi for Counter {
 Import declaration
 ================================================================================
 
-import ast::{Value, ReplError};
+pub import mod::number::{Number::{self, Int as Integer}, parse_number};
 
 --------------------------------------------------------------------------------
 
 (source_file
   (import_declaration
+    (visibility_modifier)
     path: (import_path
-      (identifier)
+      (import_segment)
+      (import_segment
+        (identifier))
       (import_group
-        (type_identifier)
-        (type_identifier)))))
+        (import_item
+          (type_identifier)
+          (import_group
+            (import_item)
+            (import_item
+              (type_identifier)
+              alias: (type_identifier))))
+        (import_item
+          (identifier))))))
 
 ================================================================================
 Impl declaration
@@ -364,7 +374,7 @@ Generic inherent impl declaration
 ================================================================================
 
 impl<T> List<T> {
-    public fn is_empty(self) -> bool {
+    pub fn is_empty(self) -> bool {
         true
     }
 }
@@ -429,8 +439,8 @@ Type alias declarations
 ================================================================================
 
 type SomeA = SomeExistingStruct;
-public type MyError<T> = Result<T, MyError>;
-package type Pair = (String, u64)
+pub type MyError<T> = Result<T, MyError>;
+pkg type Pair = (String, u64)
 
 --------------------------------------------------------------------------------
 
@@ -463,7 +473,7 @@ package type Pair = (String, u64)
 Trait with extends clause
 ================================================================================
 
-public actor trait HubApi extends ReadableCounter, WritableCounter {
+pub actor trait HubApi extends ReadableCounter, WritableCounter {
     mutator join(self, id: ClientId);
 }
 

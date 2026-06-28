@@ -49,8 +49,11 @@
 ; Operators
 ; ---------------------------------------------------------------------------
 
-[ "~>" "<~" ] @operator            ; actor send
-"|>" @operator                     ; pipe
+; Actor send & pipe get distinct captures so themes can color them
+; individually (they fall back to @operator in editors that don't).
+"~>" @operator.send.write          ; write to an actor
+"<~" @operator.send.read           ; read from an actor
+"|>" @operator.pipe                ; pure pipeline
 [ "->" ".." "..=" ] @operator
 [
   "+" "-" "*" "**" "/" "%"
