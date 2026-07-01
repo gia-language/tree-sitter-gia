@@ -6,6 +6,7 @@
 (actor_struct_declaration) @fold
 (actor_trait_declaration) @fold
 (impl_declaration) @fold
+(import_group) @fold
 (case_expression) @fold
 (if_expression) @fold
 (list_expression) @fold

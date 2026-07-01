@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "description": "Tree-sitter grammar for the Gia programming language",
   "main": "bindings/node",
+  "types": "bindings/node",
   "keywords": [
+    "incremental",
     "parser",
+    "parsing",
     "tree-sitter",
-    "gia"
+    "gia",
+    "language"
   ],
   "license": "MIT",
   "repository": {
@@ -17,17 +21,44 @@
     "url": "https://github.com/gia-language/gia-treesitter/issues"
   },
   "homepage": "https://github.com/gia-language/gia-treesitter#readme",
+  "files": [
+    "bindings/node/*",
+    "binding.gyp",
+    "grammar.js",
+    "LICENSE",
+    "queries/*",
+    "README.md",
+    "src/**",
+    "tree-sitter.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "generate": "tree-sitter generate",
     "build": "node-gyp rebuild",
-    "test": "tree-sitter test",
-    "parse": "tree-sitter parse"
+    "install": "node-gyp-build || node-gyp rebuild",
+    "parse": "tree-sitter parse",
+    "smoke-test": "node --test bindings/node/*_test.js",
+    "test": "tree-sitter test && npm run smoke-test",
+    "verify": "npm run generate && npm run build && npm test",
+    "prepublishOnly": "npm run verify"
   },
   "dependencies": {
-    "nan": "^2.22.0"
+    "node-addon-api": "^8.3.1",
+    "node-gyp-build": "^4.8.4"
   },
   "devDependencies": {
+    "tree-sitter": "^0.25.0",
     "tree-sitter-cli": "^0.25.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.25.0"
+  },
+  "peerDependenciesMeta": {
+    "tree-sitter": {
+      "optional": true
+    }
   },
   "tree-sitter": [
     {

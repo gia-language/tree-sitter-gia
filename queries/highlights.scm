@@ -44,7 +44,7 @@
 
 (async_expression "async" @keyword.coroutine)
 
-[ "where" "with" "for" ] @keyword
+[ "where" "with" "for" "as" ] @keyword
 
 ; ---------------------------------------------------------------------------
 ; Operators
@@ -103,6 +103,44 @@
 (enum_declaration name: (type_identifier) @type)
 (actor_struct_declaration name: (type_identifier) @type)
 (actor_trait_declaration name: (type_identifier) @type)
+
+; ---------------------------------------------------------------------------
+; Imports
+; ---------------------------------------------------------------------------
+
+((import_path
+  (import_segment
+    [ "mod" "pkg" ] @keyword.modifier))
+  (#set! priority 115))
+
+((import_path
+  (import_segment
+    (identifier) @module))
+  (#set! priority 115))
+
+((import_path
+  (import_segment
+    (type_identifier) @module))
+  (#set! priority 115))
+
+((import_item "self" @variable.builtin)
+  (#set! priority 115))
+
+((import_item
+  (identifier) @variable.import)
+  (#set! priority 115))
+
+((import_item
+  (type_identifier) @type)
+  (#set! priority 115))
+
+((import_item
+  alias: (identifier) @variable.import)
+  (#set! priority 115))
+
+((import_item
+  alias: (type_identifier) @type)
+  (#set! priority 115))
 
 
 ; ---------------------------------------------------------------------------
