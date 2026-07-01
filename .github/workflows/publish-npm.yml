@@ -23,6 +23,13 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run verify
+      - run: npm run verify:native
+      - run: npm run verify:wasm
+        env:
+          TREE_SITTER_WASM_DOCKER: "1"
       - run: npm pack --dry-run
+        env:
+          TREE_SITTER_WASM_DOCKER: "1"
       - run: npm publish --provenance --access public
+        env:
+          TREE_SITTER_WASM_DOCKER: "1"

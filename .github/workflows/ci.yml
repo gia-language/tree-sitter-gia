@@ -13,16 +13,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            node-version: 22.14.0
+          - os: macos-latest
+            node-version: 22.14.0
+          - os: windows-latest
+            node-version: 24
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.14.0
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
+      - if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
       - run: npm ci
-      - run: npm run verify
-      - run: npm pack --dry-run
+      - run: npm run verify:native
+      - if: runner.os == 'Linux'
+        run: npm run verify:wasm
+        env:
+          TREE_SITTER_WASM_DOCKER: "1"
+      - if: runner.os == 'Linux'
+        run: npm pack --dry-run
+        env:
+          TREE_SITTER_WASM_DOCKER: "1"
