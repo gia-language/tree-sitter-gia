@@ -42,10 +42,6 @@
     "named": true,
     "subtypes": [
       {
-        "type": "async_expression",
-        "named": true
-      },
-      {
         "type": "binary_expression",
         "named": true
       },
@@ -147,6 +143,10 @@
       },
       {
         "type": "struct_expression",
+        "named": true
+      },
+      {
+        "type": "try_expression",
         "named": true
       },
       {
@@ -536,21 +536,6 @@
         },
         {
           "type": "positional_argument",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "async_expression",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "_expression",
           "named": true
         }
       ]
@@ -2191,6 +2176,22 @@
     }
   },
   {
+    "type": "try_expression",
+    "named": true,
+    "fields": {
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "tuple_expression",
     "named": true,
     "fields": {},
@@ -2620,6 +2621,10 @@
     "named": false
   },
   {
+    "type": "?",
+    "named": false
+  },
+  {
     "type": "@",
     "named": false
   },
@@ -2644,15 +2649,19 @@
     "named": false
   },
   {
-    "type": "async",
-    "named": false
-  },
-  {
     "type": "break",
     "named": false
   },
   {
+    "type": "capability",
+    "named": false
+  },
+  {
     "type": "case",
+    "named": false
+  },
+  {
+    "type": "context",
     "named": false
   },
   {
@@ -2755,10 +2764,6 @@
   },
   {
     "type": "pub",
-    "named": false
-  },
-  {
-    "type": "pure",
     "named": false
   },
   {

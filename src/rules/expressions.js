@@ -61,8 +61,8 @@ module.exports = {
       $.range_expression,
       $.pipe_expression,
       $.impure_expression,
-      $.async_expression,
       $.send_expression,
+      $.try_expression,
       $.field_expression,
       $.path_expression,
       $.call_expression,
@@ -118,8 +118,8 @@ module.exports = {
   impure_expression: ($) =>
     prec.right(PRECEDENCE.IMPURE, seq("impure", $._expression)),
 
-  async_expression: ($) =>
-    prec.right(PRECEDENCE.IMPURE, seq("async", $._expression)),
+  try_expression: ($) =>
+    prec(PRECEDENCE.CALL, seq(field("value", $._expression), "?")),
 
   send_expression: ($) =>
     prec.left(

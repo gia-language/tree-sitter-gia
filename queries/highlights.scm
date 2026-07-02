@@ -16,7 +16,6 @@
 
 [
   "fn"
-  "pure"
   "impure"
   "actor"
   "trait"
@@ -28,9 +27,13 @@
   "reader"
   "import"
   "defer"
+  "context"
+  "capability"
+  "extends"
 ] @keyword
 
 (visibility_modifier) @keyword.modifier
+[ "opaque" ] @keyword.modifier
 
 [ "let" ] @keyword.storage
 
@@ -41,8 +44,6 @@
 (loop_expression "loop" @keyword.repeat)
 (break_expression "break" @keyword.repeat)
 (continue_expression) @keyword.repeat
-
-(async_expression "async" @keyword.coroutine)
 
 [ "where" "with" "for" "as" ] @keyword
 
@@ -55,7 +56,8 @@
 "~>" @operator.send.write          ; write to an actor
 "<~" @operator.send.read           ; read from an actor
 "|>" @operator.pipe                ; pure pipeline
-[ "->" ".." "..=" ] @operator
+"?" @operator                      ; try / error propagation
+[ "->" "=>" ".." "..=" ] @operator
 [
   "+" "-" "*" "**" "/" "%"
   "==" "!=" "<" ">" "<=" ">="
@@ -82,8 +84,13 @@
 
 ((named_type (identifier) @type.builtin)
   (#any-of? @type.builtin
-    "bool" "u8" "u16" "u32" "u64" "u128" "usize"
+    "bool" "char" "u8" "u16" "u32" "u64" "u128" "usize"
     "i8" "i16" "i32" "i64" "i128" "isize" "f32" "f64")
+  (#set! priority 110))
+
+; Uppercase builtin types
+((type_identifier) @type.builtin
+  (#any-of? @type.builtin "String" "Unit" "Never")
   (#set! priority 110))
 
 ; Self is a type keyword

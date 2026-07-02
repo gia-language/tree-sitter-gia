@@ -65,7 +65,7 @@ module.exports = {
 
   visibility_modifier: (_$) => choice("pub", "mod", "pkg"),
 
-  function_purity_modifier: (_$) => choice("pure", "impure"),
+  function_purity_modifier: (_$) => "impure",
 
   function_declaration: ($) =>
     seq(
@@ -98,6 +98,7 @@ module.exports = {
     seq(
       repeat($.attribute),
       optional($.visibility_modifier),
+      optional("context"),
       optional("opaque"),
       "struct",
       field("name", $.type_identifier),
@@ -146,6 +147,7 @@ module.exports = {
   trait_declaration: ($) =>
     seq(
       optional($.visibility_modifier),
+      optional("capability"),
       "trait",
       field("name", choice($.type_identifier, $.identifier)),
       optional(field("type_parameters", $.type_parameters)),
@@ -174,6 +176,7 @@ module.exports = {
   actor_trait_declaration: ($) =>
     seq(
       optional($.visibility_modifier),
+      optional("capability"),
       "actor",
       "trait",
       field("name", choice($.type_identifier, $.identifier)),

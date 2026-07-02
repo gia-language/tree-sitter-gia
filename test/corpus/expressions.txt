@@ -85,6 +85,31 @@ fn f() {
             (positional_argument (string_literal))))))))
 
 ================================================================================
+Try expression
+================================================================================
+
+fn f() {
+    let x = risky()?;
+    other()?
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        value: (try_expression
+          value: (call_expression
+            callee: (identifier))))
+      value: (try_expression
+        value: (call_expression
+          callee: (identifier))))))
+
+================================================================================
 Labeled argument
 ================================================================================
 

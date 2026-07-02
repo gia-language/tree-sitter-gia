@@ -23,7 +23,7 @@ module.exports = {
 
   function_type: ($) =>
     seq(
-      optional(choice("pure", "impure")),
+      optional("impure"),
       "fn",
       "(",
       commaSep($._type_annotation),

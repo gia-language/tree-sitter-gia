@@ -50,10 +50,10 @@ pub impure fn main(app: App) {
         (string_literal))))))))
 
 ================================================================================
-Pure function and function-type parameter
+Function with function-type parameter
 ================================================================================
 
-pub pure fn apply(mapper: pure fn(u64) -> u64, value: u64) -> u64 {
+pub fn apply(mapper: fn(u64) -> u64, value: u64) -> u64 {
     mapper(value)
 }
 
@@ -62,7 +62,6 @@ pub pure fn apply(mapper: pure fn(u64) -> u64, value: u64) -> u64 {
 (source_file
   (function_declaration
     (visibility_modifier)
-    (function_purity_modifier)
     name: (identifier)
     parameters: (parameter_list
       (parameter
@@ -84,6 +83,40 @@ pub pure fn apply(mapper: pure fn(u64) -> u64, value: u64) -> u64 {
         arguments: (argument_list
           (positional_argument
             (identifier)))))))
+
+================================================================================
+Context struct and capability trait
+================================================================================
+
+pub context struct AuthContext {
+    user: String,
+}
+
+pub capability trait Logger {
+    fn log(self, message: String);
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (struct_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    (struct_field
+      name: (identifier)
+      type: (named_type
+        (type_identifier))))
+  (trait_declaration
+    (visibility_modifier)
+    name: (type_identifier)
+    (method_signature
+      name: (identifier)
+      parameters: (parameter_list
+        (self)
+        (parameter
+          name: (identifier)
+          type: (named_type
+            (type_identifier)))))))
 
 ================================================================================
 Function with where and with clauses
