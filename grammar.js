@@ -21,6 +21,9 @@ module.exports = grammar({
 
   conflicts: ($) => [
     [$._expression, $.struct_expression],
+    // A trailing block-like form may be the block's value or a bare statement (§30.3);
+    // let the GLR parser keep both and resolve by which yields a complete parse.
+    [$._block_like_expression, $._expression],
   ],
 
   rules: {

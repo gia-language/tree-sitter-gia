@@ -1,0 +1,29 @@
+fn f(items: List<u64>) -> u64 {
+    let mut total = 0;
+//  ^ keyword.storage
+//      ^ keyword.storage
+    for mut x in items {
+//  ^ keyword.repeat
+//      ^ keyword.storage
+//            ^ keyword.repeat
+        total = total + x;
+        if x > 10 {
+//      ^ keyword.conditional
+            break;
+//          ^ keyword.repeat
+        } else {
+//        ^ keyword.conditional
+            continue;
+//          ^ keyword.repeat
+        }
+    }
+    while total > 0 {
+//  ^ keyword.repeat
+        total = total - 1;
+    }
+    loop {
+//  ^ keyword.repeat
+        return total;
+//      ^ keyword.return
+    }
+}

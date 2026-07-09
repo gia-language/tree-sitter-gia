@@ -398,3 +398,197 @@ fn f() {
             (identifier)))
         (identifier)))))
 
+
+
+================================================================================
+let mut binding and assignment statement
+================================================================================
+
+fn f() {
+    let mut total: u64 = 0;
+    total = total + 1;
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (let_statement
+        pattern: (identifier)
+        type: (named_type (identifier))
+        value: (integer_literal))
+      (assignment_statement
+        target: (identifier)
+        value: (binary_expression
+          (identifier)
+          (integer_literal))))))
+
+================================================================================
+for loop (statement) with tuple-destructuring head
+================================================================================
+
+fn f() {
+    for (i, n) in pairs {
+        step(i, n);
+    }
+    done()
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (for_expression
+        pattern: (tuple_pattern
+          (identifier)
+          (identifier))
+        iterable: (identifier)
+        body: (block
+          (expression_statement
+            (call_expression
+              callee: (identifier)
+              arguments: (argument_list
+                (positional_argument (identifier))
+                (positional_argument (identifier)))))))
+      value: (call_expression callee: (identifier)))))
+
+================================================================================
+for mut (statement) over a range, with continue
+================================================================================
+
+fn f() {
+    for mut i in 0..n {
+        continue;
+    }
+    0
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (for_expression
+        pattern: (identifier)
+        iterable: (range_expression
+          (integer_literal)
+          (identifier))
+        body: (block
+          (expression_statement
+            (continue_expression))))
+      value: (integer_literal))))
+
+================================================================================
+while loop (statement) with a bare break
+================================================================================
+
+fn f() {
+    while ready {
+        break;
+    }
+    0
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (while_expression
+        condition: (identifier)
+        body: (block
+          (expression_statement
+            (break_expression))))
+      value: (integer_literal))))
+
+================================================================================
+return as a case-arm body
+================================================================================
+
+fn f(o: Option<u64>) -> u64 {
+    case o {
+        Some(j) => return j,
+        None => 0,
+    }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list
+      (parameter
+        name: (identifier)
+        type: (generic_type name: (type_identifier) (named_type (identifier)))))
+    return_type: (named_type (identifier))
+    body: (block
+      value: (case_expression
+        scrutinee: (identifier)
+        (case_arm
+          pattern: (variant_pattern name: (type_identifier) (identifier))
+          body: (return_expression (identifier)))
+        (case_arm
+          pattern: (variant_pattern name: (type_identifier))
+          body: (integer_literal))))))
+
+================================================================================
+block-like if used as a non-trailing statement
+================================================================================
+
+fn f() {
+    if ready {
+        go();
+    }
+    cleanup();
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    body: (block
+      (if_expression
+        condition: (identifier)
+        then: (block
+          (expression_statement
+            (call_expression callee: (identifier)))))
+      (expression_statement
+        (call_expression callee: (identifier))))))
+
+================================================================================
+block-like loop as a statement before a trailing value
+================================================================================
+
+fn f() -> u64 {
+    loop {
+        break;
+    }
+    42
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    name: (identifier)
+    parameters: (parameter_list)
+    return_type: (named_type (identifier))
+    body: (block
+      (loop_expression
+        body: (block
+          (expression_statement
+            (break_expression))))
+      value: (integer_literal))))

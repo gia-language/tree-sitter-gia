@@ -35,17 +35,21 @@
 (visibility_modifier) @keyword.modifier
 [ "opaque" ] @keyword.modifier
 
-[ "let" ] @keyword.storage
+[ "let" "mut" ] @keyword.storage
 
 [ "return" ] @keyword.return
 
 [ "if" "else" "case" ] @keyword.conditional
 
 (loop_expression "loop" @keyword.repeat)
+(for_expression "for" @keyword.repeat)
+(for_expression "in" @keyword.repeat)
+(while_expression "while" @keyword.repeat)
 (break_expression "break" @keyword.repeat)
 (continue_expression) @keyword.repeat
 
-[ "where" "with" "for" "as" ] @keyword
+[ "where" "with" "as" ] @keyword
+(impl_declaration "for" @keyword)
 
 ; ---------------------------------------------------------------------------
 ; Operators

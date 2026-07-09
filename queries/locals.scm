@@ -13,6 +13,8 @@
 (if_expression) @local.scope
 (case_arm) @local.scope
 (loop_expression) @local.scope
+(for_expression) @local.scope
+(while_expression) @local.scope
 
 ; ---------------------------------------------------------------------------
 ; Definitions
@@ -25,6 +27,11 @@
 (let_statement pattern: (identifier) @local.definition)
 (let_statement pattern: (tuple_pattern (identifier) @local.definition))
 (let_statement pattern: (list_pattern (identifier) @local.definition))
+
+; `for` head binding — scoped to the for_expression, not its body block.
+(for_expression pattern: (identifier) @local.definition)
+(for_expression pattern: (tuple_pattern (identifier) @local.definition))
+(for_expression pattern: (list_pattern (identifier) @local.definition))
 
 ; Case arm bindings
 (case_arm pattern: (identifier) @local.definition)

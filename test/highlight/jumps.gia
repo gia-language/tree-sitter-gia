@@ -1,0 +1,8 @@
+fn f(o: Option<u64>) -> u64 {
+    case o {
+//  ^ keyword.conditional
+        Some(j) => return j,
+//                 ^ keyword.return
+        None => 0,
+    }
+}

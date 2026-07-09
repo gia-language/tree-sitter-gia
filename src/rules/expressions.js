@@ -29,22 +29,41 @@ module.exports = {
   _statement: ($) =>
     choice(
       $.let_statement,
-      $.return_statement,
+      $.assignment_statement,
       $.defer_statement,
-      $.expression_statement
+      $.expression_statement,
+      // Block-like expressions may be statements without a trailing `;` (§30.3). Lower
+      // dynamic precedence than the block's trailing `value`, so a *final* block-like form
+      // is kept as the value; one followed by more code falls back to a statement.
+      prec.dynamic(-1, $._block_like_expression)
     ),
 
+  _block_like_expression: ($) =>
+    choice(
+      $.block,
+      $.if_expression,
+      $.case_expression,
+      $.loop_expression,
+      $.for_expression,
+      $.while_expression
+    ),
+
+  // `let mut IDENT` marks a rebindable local (§29 #24); the binder is otherwise any pattern,
+  // and the whole pattern may carry a type annotation (`let x: T = …`).
   let_statement: ($) =>
     seq(
       "let",
+      optional("mut"),
       field("pattern", $._pattern),
+      optional(seq(":", field("type", $._type_annotation))),
       "=",
       field("value", $._expression),
       ";"
     ),
 
-  return_statement: ($) =>
-    seq("return", optional(field("value", $._expression)), ";"),
+  // Rebinding a `let mut` local. Assignment is a statement, never an expression (§29 #24).
+  assignment_statement: ($) =>
+    seq(field("target", $.identifier), "=", field("value", $._expression), ";"),
 
   defer_statement: ($) => seq("defer", field("value", $._expression), ";"),
 
@@ -74,6 +93,9 @@ module.exports = {
       $.if_expression,
       $.case_expression,
       $.loop_expression,
+      $.for_expression,
+      $.while_expression,
+      $.return_expression,
       $.break_expression,
       $.continue_expression,
       $.parenthesized_expression,
@@ -237,6 +259,24 @@ module.exports = {
     seq(field("pattern", $._pattern), "=>", field("body", $._expression)),
 
   loop_expression: ($) => seq("loop", field("body", $.block)),
+
+  // `for pattern in iterable { }`; `for mut x in …` marks the head binding rebindable.
+  for_expression: ($) =>
+    seq(
+      "for",
+      optional("mut"),
+      field("pattern", $._pattern),
+      "in",
+      field("iterable", $._expression),
+      field("body", $.block)
+    ),
+
+  while_expression: ($) =>
+    seq("while", field("condition", $._expression), field("body", $.block)),
+
+  // Jumps are Never-typed expressions (§30), so they compose anywhere — e.g. a case-arm body.
+  return_expression: ($) =>
+    prec.right(PRECEDENCE.IMPURE, seq("return", optional($._expression))),
 
   break_expression: ($) =>
     prec.right(PRECEDENCE.IMPURE, seq("break", optional($._expression))),

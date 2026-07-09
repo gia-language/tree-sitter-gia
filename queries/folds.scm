@@ -9,5 +9,8 @@
 (import_group) @fold
 (case_expression) @fold
 (if_expression) @fold
+(loop_expression) @fold
+(for_expression) @fold
+(while_expression) @fold
 (list_expression) @fold
 (map_expression) @fold
