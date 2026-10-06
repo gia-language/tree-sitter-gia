@@ -2,34 +2,69 @@ name: Publish NPM Package
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to verify without publishing
+        required: true
+        type: string
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
+  verify:
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ inputs.tag || github.ref }}
 
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          ref: ${{ inputs.tag || github.ref }}
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
           registry-url: https://registry.npmjs.org
-          cache: npm
-
+      - name: Install npm with trusted publishing support
+        run: npm install --global npm@11.6.2
+      - name: Check tag and package version
+        id: version
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: node scripts/check-release.mjs . >> "$GITHUB_OUTPUT"
       - run: npm ci
       - run: npm run verify:native
       - run: npm run verify:wasm
         env:
           TREE_SITTER_WASM_DOCKER: "1"
-      - run: npm pack --dry-run
+      - name: Pack release artifact
+        working-directory: .
+        run: |
+          mkdir -p "$RUNNER_TEMP/release-package"
+          npm pack --pack-destination "$RUNNER_TEMP/release-package"
         env:
           TREE_SITTER_WASM_DOCKER: "1"
-      - run: npm publish --access public
+      - name: Publish verified artifact
+        if: github.event_name == 'push'
+        working-directory: .
         env:
-          TREE_SITTER_WASM_DOCKER: "1"
+          NPM_DIST_TAG: ${{ steps.version.outputs.dist_tag }}
+        run: |
+          shopt -s nullglob
+          packages=("$RUNNER_TEMP/release-package"/*.tgz)
+          test "${#packages[@]}" -eq 1
+          npm publish "${packages[0]}" --provenance --access public --tag "$NPM_DIST_TAG"

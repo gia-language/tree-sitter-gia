@@ -16,8 +16,21 @@ test("can load the WASM grammar with web-tree-sitter", async () => {
   const parser = new Parser();
   parser.setLanguage(language);
 
-  const tree = parser.parse("fn main() -> u64 { 42 }");
+  const tree = parser.parse(`fn main() -> u64 {
+    let mut total: u64 = 0;
+    for n in 0..4 {
+      total = total + n;
+    }
+    while total < 10 {
+      total = total + 1;
+    }
+    total
+  }`);
 
   assert.equal(tree.rootNode.hasError, false);
   assert.equal(tree.rootNode.type, "source_file");
+  assert.equal(tree.rootNode.descendantsOfType("for_expression").length, 1);
+  assert.equal(tree.rootNode.descendantsOfType("while_expression").length, 1);
+  parser.delete();
+  tree.delete();
 });

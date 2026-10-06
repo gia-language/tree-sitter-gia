@@ -29,12 +29,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gia-language/gia-treesitter.git"
+    "url": "git+https://github.com/gia-language/tree-sitter-gia.git"
   },
   "bugs": {
-    "url": "https://github.com/gia-language/gia-treesitter/issues"
+    "url": "https://github.com/gia-language/tree-sitter-gia/issues"
   },
-  "homepage": "https://github.com/gia-language/gia-treesitter#readme",
+  "homepage": "https://github.com/gia-language/tree-sitter-gia#readme",
   "files": [
     "bindings/node/*",
     "bindings/web/*",
