@@ -34,3 +34,28 @@ test("can load the WASM grammar with web-tree-sitter", async () => {
   parser.delete();
   tree.delete();
 });
+
+test("WASM preserves value algebra precedence and list shorthand", async () => {
+  await Parser.init();
+  const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse(`type Input = i64 | i64[];
+    type Reduced = (i64 | bool) \\ bool;
+    type Combined = i64 | bool & String \\ char;
+    type Callback = fn(i64 | bool) -> i64 | bool;`);
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.equal(tree.rootNode.descendantsOfType("list_type").length, 1);
+    const combined = tree.rootNode.namedChildren[2].namedChildren[1];
+    assert.equal(combined.type, "union_type");
+    assert.equal(combined.namedChildren[1].type, "intersection_type");
+    assert.equal(combined.namedChildren[1].namedChildren[1].type, "difference_type");
+    const callback = tree.rootNode.namedChildren[3].namedChildren[1];
+    assert.equal(callback.type, "function_type");
+    assert.equal(callback.namedChildren.at(-1).type, "union_type");
+  } finally {
+    tree.delete();
+    parser.delete();
+  }
+});

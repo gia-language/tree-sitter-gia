@@ -602,3 +602,63 @@ impl Loggable for Store {}
       (type_identifier))
     target_type: (named_type
       (type_identifier))))
+
+================================================================================
+Value type algebra and list shorthand
+================================================================================
+
+fn accept(x: i64 | i64[]) -> (i64 | bool) \ bool { x }
+type Combined = i64 | bool & String \ char;
+type Callback = fn(i64 | bool) -> i64 | bool;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (union_type
+          (named_type
+            (identifier))
+          (list_type
+            (named_type
+              (identifier))))))
+    (difference_type
+      (tuple_type
+        (union_type
+          (named_type
+            (identifier))
+          (named_type
+            (identifier))))
+      (named_type
+        (identifier)))
+    (block
+      (identifier)))
+  (type_alias_declaration
+    (type_identifier)
+    (union_type
+      (named_type
+        (identifier))
+      (intersection_type
+        (named_type
+          (identifier))
+        (difference_type
+          (named_type
+            (type_identifier))
+          (named_type
+            (identifier))))))
+  (type_alias_declaration
+    (type_identifier)
+    (function_type
+      (union_type
+        (named_type
+          (identifier))
+        (named_type
+          (identifier)))
+      (union_type
+        (named_type
+          (identifier))
+        (named_type
+          (identifier))))))

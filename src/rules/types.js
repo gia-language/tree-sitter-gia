@@ -5,7 +5,12 @@ module.exports = {
     seq("<", commaSep1($.type_identifier), optional(","), ">"),
 
   _type_annotation: ($) =>
-    choice($.generic_type, $.named_type, $.function_type, $.tuple_type),
+    choice($.generic_type, $.named_type, $.function_type, $.tuple_type, $.union_type, $.intersection_type, $.difference_type, $.list_type),
+
+  union_type: ($) => prec.left(1, seq($._type_annotation, "|", $._type_annotation)),
+  intersection_type: ($) => prec.left(2, seq($._type_annotation, "&", $._type_annotation)),
+  difference_type: ($) => prec.left(3, seq($._type_annotation, "\\", $._type_annotation)),
+  list_type: ($) => prec.left(4, seq($._type_annotation, "[", "]")),
 
   named_type: ($) => choice($.type_identifier, $.identifier),
 
@@ -22,7 +27,7 @@ module.exports = {
     ),
 
   function_type: ($) =>
-    seq(
+    prec.right(0, seq(
       optional("impure"),
       "fn",
       "(",
@@ -31,7 +36,7 @@ module.exports = {
       ")",
       "->",
       $._type_annotation
-    ),
+    )),
 
   tuple_type: ($) =>
     seq("(", optional(seq(commaSep1($._type_annotation), optional(","))), ")"),
