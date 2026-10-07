@@ -8,6 +8,27 @@ import { Language, Parser } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+test("WASM accepts a final struct field without relaxing field separators", async () => {
+  await Parser.init();
+  const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse(`type Pair = (i64 | bool, bool);
+    type Residual = Pair \\ (i64, bool);
+    struct Boxed<T> { value: T }
+    actor struct State { ready: bool }`);
+  const invalid = parser.parse("struct Broken { x: bool y: bool }");
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.equal(tree.rootNode.descendantsOfType("struct_field").length, 2);
+    assert.equal(invalid.rootNode.hasError, true);
+  } finally {
+    tree.delete();
+    invalid.delete();
+    parser.delete();
+  }
+});
+
 test("WASM parses typed case bindings and integer suffixes", async () => {
   await Parser.init();
   const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));

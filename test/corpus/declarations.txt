@@ -662,3 +662,37 @@ type Callback = fn(i64 | bool) -> i64 | bool;
           (identifier))
         (named_type
           (identifier))))))
+
+==================
+Struct field separators allow only a trailing omission
+==================
+struct Boxed<T> { value: T }
+struct Pair { x: i64, y: bool, }
+actor struct State { ready: bool }
+---
+
+(source_file
+  (struct_declaration
+    (type_identifier)
+    (type_parameters
+      (type_identifier))
+    (struct_field
+      (identifier)
+      (named_type
+        (type_identifier))))
+  (struct_declaration
+    (type_identifier)
+    (struct_field
+      (identifier)
+      (named_type
+        (identifier)))
+    (struct_field
+      (identifier)
+      (named_type
+        (identifier))))
+  (actor_struct_declaration
+    (type_identifier)
+    (struct_field
+      (identifier)
+      (named_type
+        (identifier)))))

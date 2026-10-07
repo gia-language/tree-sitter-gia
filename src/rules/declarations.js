@@ -105,7 +105,7 @@ module.exports = {
       optional(field("type_parameters", $.type_parameters)),
       optional(field("where_clause", $.where_clause)),
       "{",
-      repeat($.struct_field),
+      sepTrailing(",", $.struct_field),
       "}"
     ),
 
@@ -113,8 +113,7 @@ module.exports = {
     seq(
       field("name", $.identifier),
       ":",
-      field("type", $._type_annotation),
-      ","
+      field("type", $._type_annotation)
     ),
 
   enum_declaration: ($) =>
@@ -207,7 +206,7 @@ module.exports = {
       field("name", $.type_identifier),
       optional(field("type_parameters", $.type_parameters)),
       "{",
-      repeat($.struct_field),
+      sepTrailing(",", $.struct_field),
       "}"
     ),
 
