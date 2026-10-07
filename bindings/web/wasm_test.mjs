@@ -8,6 +8,30 @@ import { Language, Parser } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+test("WASM recognizes qualified constructor subset annotations", async () => {
+  await Parser.init();
+  const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse("type LeafOnly = Tree::Leaf; type GenericLeaf<T> = tree::GenericTree::GLeaf<T>; fn precise(value: LeafOnly) -> i64 { case value { Tree::Leaf(n) => n } }");
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.deepEqual(tree.rootNode.descendantsOfType("qualified_type_name").map(node => node.text), ["Tree::Leaf", "tree::GenericTree::GLeaf"]);
+  } finally { tree.delete(); parser.delete(); }
+});
+
+test("WASM recognizes subset associated outputs in trait implementations", async () => {
+  await Parser.init();
+  const parser = new Parser(); parser.setLanguage(await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm"))));
+  const tree = parser.parse("trait Factory { type Output; fn make(self) -> Self::Output; } impl Factory for Tree { type Output = Tree::Leaf; fn make(self) -> Tree::Leaf { Tree::Leaf(7i64) } }");
+  const invalid = parser.parse("impl Tree { type Output = Tree; }");
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.equal(tree.rootNode.descendantsOfType("associated_type_binding").length, 1);
+    assert.equal(invalid.rootNode.hasError, true);
+  } finally { tree.delete(); invalid.delete(); parser.delete(); }
+});
+
 test("WASM recognizes qualified enum variant patterns", async () => {
   await Parser.init();
   const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));

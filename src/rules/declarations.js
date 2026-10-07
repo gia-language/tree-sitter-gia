@@ -153,11 +153,14 @@ module.exports = {
       optional(field("extends", $.extends_clause)),
       optional(field("where_clause", $.where_clause)),
       "{",
-      repeat($.method_signature),
+      repeat(choice($.method_signature, $.associated_type_declaration)),
       "}"
     ),
 
   extends_clause: ($) => seq("extends", commaSep1($._type_annotation)),
+
+  associated_type_declaration: ($) => seq("type", field("name", choice($.type_identifier, $.identifier)), ";"),
+  associated_type_binding: ($) => seq("type", field("name", choice($.type_identifier, $.identifier)), "=", field("value", $._type_annotation), ";"),
 
   method_signature: ($) =>
     seq(
@@ -240,13 +243,11 @@ module.exports = {
         seq(
           field("trait_type", $._type_annotation),
           "for",
-          field("target_type", $._type_annotation)
+          field("target_type", $._type_annotation),
+          optional(field("where_clause", $.where_clause)),
+          "{", repeat(choice($.function_declaration, $.actor_handler, $.associated_type_binding)), "}"
         ),
-        field("target_type", $._type_annotation)
-      ),
-      optional(field("where_clause", $.where_clause)),
-      "{",
-      repeat(choice($.function_declaration, $.actor_handler)),
-      "}"
+        seq(field("target_type", $._type_annotation), optional(field("where_clause", $.where_clause)), "{", repeat(choice($.function_declaration, $.actor_handler)), "}")
+      )
     ),
 };

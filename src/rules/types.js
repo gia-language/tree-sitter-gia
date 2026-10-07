@@ -12,13 +12,15 @@ module.exports = {
   difference_type: ($) => prec.left(3, seq($._type_annotation, "\\", $._type_annotation)),
   list_type: ($) => prec.left(4, seq($._type_annotation, "[", "]")),
 
-  named_type: ($) => choice($.type_identifier, $.identifier),
+  qualified_type_name: ($) => seq(repeat1(seq(choice($.type_identifier, $.identifier), "::")), choice($.type_identifier, $.identifier)),
+
+  named_type: ($) => choice($.type_identifier, $.identifier, $.qualified_type_name),
 
   generic_type: ($) =>
     prec(
       1,
       seq(
-        field("name", $.type_identifier),
+        field("name", choice($.type_identifier, $.qualified_type_name)),
         "<",
         commaSep1($._type_annotation),
         optional(","),
