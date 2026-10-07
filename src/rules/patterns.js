@@ -25,9 +25,11 @@ module.exports = {
       $.boolean_literal,
     ),
 
+  qualified_pattern_name: ($) => seq(repeat1(seq(choice($.identifier, $.type_identifier), "::")), $.type_identifier),
+
   variant_pattern: ($) =>
     seq(
-      field("name", $.type_identifier),
+      field("name", choice($.type_identifier, $.qualified_pattern_name)),
       optional(seq("(", commaSep1($._pattern), optional(","), ")")),
     ),
 

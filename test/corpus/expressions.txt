@@ -640,3 +640,38 @@ fn total(input: i64 | i64[] | bool) {
             (named_type
               (identifier)))
           (integer_literal))))))
+
+==================
+Qualified enum variant patterns
+==================
+fn inspect(value: Tree) {
+  case value { Tree::Leaf(n) => n, tree::Tree::Branch(children) => children }
+}
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (named_type
+          (type_identifier))))
+    (block
+      (case_expression
+        (identifier)
+        (case_arm
+          (variant_pattern
+            (qualified_pattern_name
+              (type_identifier)
+              (type_identifier))
+            (identifier))
+          (identifier))
+        (case_arm
+          (variant_pattern
+            (qualified_pattern_name
+              (identifier)
+              (type_identifier)
+              (type_identifier))
+            (identifier))
+          (identifier))))))

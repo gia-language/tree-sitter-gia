@@ -8,6 +8,24 @@ import { Language, Parser } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+test("WASM recognizes qualified enum variant patterns", async () => {
+  await Parser.init();
+  const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse(`fn inspect(value: Tree) {
+    case value { Tree::Leaf(n) => n, tree::Tree::Branch(children) => children }
+  }`);
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    const names = tree.rootNode.descendantsOfType("qualified_pattern_name").map(node => node.text);
+    assert.deepEqual(names, ["Tree::Leaf", "tree::Tree::Branch"]);
+  } finally {
+    tree.delete();
+    parser.delete();
+  }
+});
+
 test("WASM accepts a final struct field without relaxing field separators", async () => {
   await Parser.init();
   const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
