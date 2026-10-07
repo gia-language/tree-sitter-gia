@@ -3340,8 +3340,17 @@
           "type": "FIELD",
           "name": "pattern",
           "content": {
-            "type": "SYMBOL",
-            "name": "_pattern"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_pattern"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "type_binding_pattern"
+              }
+            ]
           }
         },
         {
@@ -4374,6 +4383,40 @@
         }
       ]
     },
+    "type_binding_pattern": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "wildcard_pattern"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ":"
+        },
+        {
+          "type": "FIELD",
+          "name": "type",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_type_annotation"
+          }
+        }
+      ]
+    },
     "wildcard_pattern": {
       "type": "STRING",
       "value": "_"
@@ -4794,7 +4837,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[0-9]+"
+        "value": "[0-9]+(?:[ui](?:8|16|32|64|128|size))?"
       }
     },
     "string_literal": {

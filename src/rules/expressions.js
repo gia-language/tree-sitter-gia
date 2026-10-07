@@ -256,7 +256,7 @@ module.exports = {
     ),
 
   case_arm: ($) =>
-    seq(field("pattern", $._pattern), "=>", field("body", $._expression)),
+    seq(field("pattern", choice($._pattern, $.type_binding_pattern)), "=>", field("body", $._expression)),
 
   loop_expression: ($) => seq("loop", field("body", $.block)),
 

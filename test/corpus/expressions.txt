@@ -592,3 +592,51 @@ fn f() -> u64 {
           (expression_statement
             (break_expression))))
       value: (integer_literal))))
+
+================================================================================
+Type case bindings narrow union members
+================================================================================
+
+fn total(input: i64 | i64[] | bool) {
+    case input { number: i64 => number, numbers: i64[] => numbers, _: bool => 0i64 }
+}
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (function_declaration
+    (identifier)
+    (parameter_list
+      (parameter
+        (identifier)
+        (union_type
+          (union_type
+            (named_type
+              (identifier))
+            (list_type
+              (named_type
+                (identifier))))
+          (named_type
+            (identifier)))))
+    (block
+      (case_expression
+        (identifier)
+        (case_arm
+          (type_binding_pattern
+            (identifier)
+            (named_type
+              (identifier)))
+          (identifier))
+        (case_arm
+          (type_binding_pattern
+            (identifier)
+            (list_type
+              (named_type
+                (identifier))))
+          (identifier))
+        (case_arm
+          (type_binding_pattern
+            (wildcard_pattern)
+            (named_type
+              (identifier)))
+          (integer_literal))))))

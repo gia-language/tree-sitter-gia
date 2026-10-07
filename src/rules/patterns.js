@@ -12,6 +12,8 @@ module.exports = {
       $.struct_pattern,
     ),
 
+  type_binding_pattern: ($) => seq(field("name", choice($.identifier, $.wildcard_pattern)), ":", field("type", $._type_annotation)),
+
   wildcard_pattern: (_$) => "_",
 
   _literal_pattern: ($) =>

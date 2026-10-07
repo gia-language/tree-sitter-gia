@@ -8,6 +8,24 @@ import { Language, Parser } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+test("WASM parses typed case bindings and integer suffixes", async () => {
+  await Parser.init();
+  const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
+  const parser = new Parser();
+  parser.setLanguage(language);
+  const tree = parser.parse(`fn total(input: i64 | i64[]) -> i64 {
+    case input { number: i64 => number, _: i64[] => 0i64 }
+  }`);
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.equal(tree.rootNode.descendantsOfType("type_binding_pattern").length, 2);
+    assert.equal(tree.rootNode.descendantsOfType("integer_literal").at(-1).text, "0i64");
+  } finally {
+    tree.delete();
+    parser.delete();
+  }
+});
+
 test("can load the WASM grammar with web-tree-sitter", async () => {
   await Parser.init();
 

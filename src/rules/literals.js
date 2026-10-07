@@ -9,7 +9,7 @@ module.exports = {
     ),
 
   float_literal: (_$) => token(/[0-9]+\.[0-9]+/),
-  integer_literal: (_$) => token(/[0-9]+/),
+  integer_literal: (_$) => token(/[0-9]+(?:[ui](?:8|16|32|64|128|size))?/),
 
   string_literal: ($) =>
     seq(

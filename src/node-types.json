@@ -798,6 +798,10 @@
           {
             "type": "_pattern",
             "named": true
+          },
+          {
+            "type": "type_binding_pattern",
+            "named": true
           }
         ]
       }
@@ -2478,6 +2482,36 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "type_binding_pattern",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "wildcard_pattern",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_type_annotation",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
