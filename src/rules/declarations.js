@@ -96,18 +96,20 @@ module.exports = {
 
   struct_declaration: ($) =>
     seq(
-      repeat($.attribute),
-      optional($.visibility_modifier),
-      optional("context"),
-      optional("opaque"),
-      "struct",
-      field("name", $.type_identifier),
+      repeat($.attribute), optional($.visibility_modifier), optional("context"), optional("opaque"),
+      "struct", field("name", choice($.type_identifier, $.identifier)),
       optional(field("type_parameters", $.type_parameters)),
-      optional(field("where_clause", $.where_clause)),
-      "{",
-      sepTrailing(",", $.struct_field),
-      "}"
+      choice(
+        seq(optional(field("where_clause", $.where_clause)), "{", sepTrailing(",", $.struct_field), "}"),
+        seq("=", field("schema", $.schema_projection), ";")
+      )
     ),
+
+  schema_projection: ($) => seq(
+    field("operation", choice("Pick", "Omit")), "<", field("source", $._type_annotation),
+    optional(seq(",", field("fields", $.schema_field_names))), ">"
+  ),
+  schema_field_names: ($) => seq($.string_literal, repeat(seq("|", $.string_literal))),
 
   struct_field: ($) =>
     seq(

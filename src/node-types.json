@@ -2124,6 +2124,61 @@
     }
   },
   {
+    "type": "schema_field_names",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "string_literal",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "schema_projection",
+    "named": true,
+    "fields": {
+      "fields": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "schema_field_names",
+            "named": true
+          }
+        ]
+      },
+      "operation": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "Omit",
+            "named": false
+          },
+          {
+            "type": "Pick",
+            "named": false
+          }
+        ]
+      },
+      "source": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_type_annotation",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "self",
     "named": true,
     "fields": {}
@@ -2228,7 +2283,21 @@
         "required": true,
         "types": [
           {
+            "type": "identifier",
+            "named": true
+          },
+          {
             "type": "type_identifier",
+            "named": true
+          }
+        ]
+      },
+      "schema": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "schema_projection",
             "named": true
           }
         ]
@@ -2977,6 +3046,14 @@
   },
   {
     "type": "@",
+    "named": false
+  },
+  {
+    "type": "Omit",
+    "named": false
+  },
+  {
+    "type": "Pick",
     "named": false
   },
   {

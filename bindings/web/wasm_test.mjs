@@ -8,6 +8,18 @@ import { Language, Parser } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
+test("WASM recognizes nominal schemas without admitting malformed selectors", async () => {
+  await Parser.init(); const parser = new Parser(); parser.setLanguage(await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm"))));
+  const tree = parser.parse('struct Summary<T> = Pick<source::User<T>, "id" | "name">; struct Rest = Omit<User>;');
+  try {
+    assert.equal(tree.rootNode.hasError, false);
+    assert.equal(tree.rootNode.descendantsOfType("schema_projection").length, 2);
+    for (const source of ['struct Broken = Pick<User, id>;', 'struct Broken = Pick<User, "id">', 'struct Broken = View<User>;']) {
+      const invalid = parser.parse(source); try { assert.equal(invalid.rootNode.hasError, true, source); } finally { invalid.delete(); }
+    }
+  } finally { tree.delete(); parser.delete(); }
+});
+
 test("WASM recognizes qualified constructor subset annotations", async () => {
   await Parser.init();
   const language = await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm")));
