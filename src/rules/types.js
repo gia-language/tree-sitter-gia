@@ -4,6 +4,9 @@ module.exports = {
   type_parameters: ($) =>
     seq("<", commaSep1($.type_identifier), optional(","), ">"),
 
+  callable_type_parameters: ($) =>
+    seq("<", commaSep1(choice($.type_identifier, $.effect_parameter)), optional(","), ">"),
+
   _type_annotation: ($) =>
     choice($.generic_type, $.named_type, $.function_type, $.tuple_type, $.union_type, $.intersection_type, $.difference_type, $.list_type),
 
@@ -37,7 +40,8 @@ module.exports = {
       optional(","),
       ")",
       "->",
-      $._type_annotation
+      $._type_annotation,
+      optional(field("effects", $.effect_clause))
     )),
 
   tuple_type: ($) =>

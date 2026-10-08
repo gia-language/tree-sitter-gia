@@ -1,6 +1,7 @@
 const declarations = require("./src/rules/declarations");
 const expressions = require("./src/rules/expressions");
 const types = require("./src/rules/types");
+const effects = require("./src/rules/effects");
 const patterns = require("./src/rules/patterns");
 const literals = require("./src/rules/literals");
 
@@ -34,6 +35,7 @@ module.exports = grammar({
     ...declarations,
     ...expressions,
     ...types,
+    ...effects,
     ...patterns,
     ...literals,
   },

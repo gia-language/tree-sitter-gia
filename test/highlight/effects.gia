@@ -1,0 +1,10 @@
+pub effect Disk;
+//  ^ keyword
+//         ^ type
+impure fn apply<effect E>(callback: fn() -> Unit effects E) effects E {
+//              ^ keyword
+//                     ^ type.parameter
+//                                               ^ keyword
+//                                                          ^ keyword
+    impure callback()
+}

@@ -54,6 +54,7 @@ module.exports = {
   _declaration: ($) =>
     choice(
       $.function_declaration,
+      $.effect_declaration,
       $.type_alias_declaration,
       $.struct_declaration,
       $.enum_declaration,
@@ -67,6 +68,11 @@ module.exports = {
 
   function_purity_modifier: (_$) => "impure",
 
+  effect_declaration: ($) => seq(
+    repeat($.attribute), optional($.visibility_modifier), "effect",
+    field("name", choice($.type_identifier, $.identifier)), ";"
+  ),
+
   function_declaration: ($) =>
     seq(
       repeat($.attribute),
@@ -74,12 +80,13 @@ module.exports = {
       optional($.function_purity_modifier),
       "fn",
       field("name", $.identifier),
-      optional(field("type_parameters", $.type_parameters)),
+      optional(field("type_parameters", alias($.callable_type_parameters, $.type_parameters))),
       field("parameters", $.parameter_list),
       optional(field("where_clause", $.where_clause)),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
-      field("body", $.block)
+      optional(field("effects", $.effect_clause)),
+      choice(field("body", $.block), ";")
     ),
 
   type_alias_declaration: ($) =>
@@ -169,11 +176,12 @@ module.exports = {
       optional($.function_purity_modifier),
       "fn",
       field("name", $.identifier),
-      optional(field("type_parameters", $.type_parameters)),
+      optional(field("type_parameters", alias($.callable_type_parameters, $.type_parameters))),
       field("parameters", $.parameter_list),
       optional(field("where_clause", $.where_clause)),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
+      optional(field("effects", $.effect_clause)),
       ";"
     ),
 
@@ -199,6 +207,7 @@ module.exports = {
       field("parameters", $.actor_parameter_list),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
+      optional(field("effects", $.effect_clause)),
       ";"
     ),
 
@@ -234,6 +243,7 @@ module.exports = {
       field("parameters", $.actor_parameter_list),
       optional(field("with_clause", $.with_clause)),
       optional(seq("->", field("return_type", $._type_annotation))),
+      optional(field("effects", $.effect_clause)),
       field("body", $.block)
     ),
 

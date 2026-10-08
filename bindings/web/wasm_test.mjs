@@ -152,3 +152,28 @@ test("WASM preserves value algebra precedence and list shorthand", async () => {
     parser.delete();
   }
 });
+
+test("WASM preserves source effect rows, binders and algebra boundaries", async () => {
+  await Parser.init();
+  const parser = new Parser();
+  parser.setLanguage(await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm"))));
+  const tree = parser.parse(`pub effect Disk; effect Log;
+    impure fn apply<T, effect E>(callback: fn(T) -> T effects E, value: T) -> T effects E { impure callback(value) }
+    trait Read { impure fn read(self) -> String effects Disk; fn ready(self) -> bool effects {}; }
+    impl Read for Store { impure fn read(self) -> String effects Disk { "" } }
+    impure fn foreign() effects io::Disk;
+    impure fn work() effects Disk | Log & Disk \\ Log \\ Disk {}`);
+  try {
+    assert.equal(tree.rootNode.hasError, false, tree.rootNode.toString());
+    assert.equal(tree.rootNode.descendantsOfType("effect_parameter").length, 1);
+    assert.equal(tree.rootNode.descendantsOfType("effect_clause").length, 7);
+    const union = tree.rootNode.descendantsOfType("union_effect")[0];
+    assert.equal(union.namedChildren[1].type, "intersection_effect");
+    assert.equal(union.namedChildren[1].namedChildren[1].namedChildren[0].type, "difference_effect");
+    for (const source of ["struct Bad<effect E> {}", "fn bad(callback: fn<effect E>() -> Unit effects E) {}", "fn bad() effects {Disk} {}"])
+    {
+      const invalid = parser.parse(source);
+      try { assert.equal(invalid.rootNode.hasError, true, source); } finally { invalid.delete(); }
+    }
+  } finally { tree.delete(); parser.delete(); }
+});

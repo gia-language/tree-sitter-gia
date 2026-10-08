@@ -30,6 +30,8 @@
   "context"
   "capability"
   "extends"
+  "effect"
+  "effects"
 ] @keyword
 
 (visibility_modifier) @keyword.modifier
@@ -226,3 +228,8 @@
 (escape_sequence) @string.escape
 (char_literal) @character
 (boolean_literal) @boolean
+
+; Effect domains, rows and rank-one binders have a distinct syntax namespace.
+(effect_declaration name: [(type_identifier) (identifier)] @type)
+(named_effect) @type
+(effect_parameter name: [(type_identifier) (identifier)] @type.parameter)

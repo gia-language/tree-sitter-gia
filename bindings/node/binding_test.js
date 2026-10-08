@@ -39,3 +39,43 @@ test("can parse a Gia source file", () => {
   assert.equal(tree.rootNode.hasError, false);
   assert.equal(tree.rootNode.type, "source_file");
 });
+
+test("effects retain nominal rows, rank-one binders and callable boundaries", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  const source = `pub effect Disk; effect Log;
+    impure fn apply<T, effect E>(callback: fn(T) -> T effects E, value: T) -> T effects E { impure callback(value) }
+    trait Read { impure fn read<effect E>(self) -> String effects E; fn ready(self) -> bool effects {}; }
+    impl Read for Store { impure fn read<effect E>(self) -> String effects E { "" } }
+    actor trait API { impure reader read(self) -> String effects Disk; }
+    impl API for Store { impure reader read(self) -> String effects Disk { "" } }
+    impure fn foreign() effects io::Disk;
+    impure fn factory() -> (fn() -> u64 effects Log) effects Disk {}
+    fn pure() effects {} {}`;
+  const tree = parser.parse(source);
+  assert.equal(tree.rootNode.hasError, false, tree.rootNode.toString());
+  assert.equal(tree.rootNode.descendantsOfType("effect_declaration").length, 2);
+  assert.equal(tree.rootNode.descendantsOfType("effect_parameter").length, 3);
+  assert.equal(tree.rootNode.descendantsOfType("effect_clause").length, 11);
+  assert.equal(tree.rootNode.descendantsOfType("function_type").length, 2);
+  assert.equal(tree.rootNode.descendantsOfType("named_effect").some(node => node.text === "io::Disk"), true);
+});
+
+test("effect algebra matches union, intersection and left associative difference precedence", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  const tree = parser.parse("impure fn work() effects A | B & C \\ D \\ E {}");
+  assert.equal(tree.rootNode.hasError, false);
+  const union = tree.rootNode.descendantsOfType("union_effect")[0];
+  assert.equal(union.namedChildren[1].type, "intersection_effect");
+  const difference = union.namedChildren[1].namedChildren[1];
+  assert.equal(difference.type, "difference_effect");
+  assert.equal(difference.namedChildren[0].type, "difference_effect");
+  assert.equal(difference.namedChildren[0].text, "C \\ D");
+});
+
+test("effect parameters remain unsupported in data owners and higher-rank arrows", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  for (const source of [
+    "struct Bad<effect E> {}", "trait Bad<effect E> {}", "impl<effect E> Store {}",
+    "fn bad(callback: fn<effect E>() -> Unit effects E) {}", "effect Disk", "fn bad() effects {Disk} {}",
+  ]) assert.equal(parser.parse(source).rootNode.hasError, true, source);
+});
