@@ -3,6 +3,19 @@ const { test } = require("node:test");
 
 const Parser = require("tree-sitter");
 const Gia = require(".");
+const fs = require("node:fs");
+const path = require("node:path");
+
+test("current tooling fixture parses and every shipped query compiles", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  const root = path.resolve(__dirname, "../..");
+  const tree = parser.parse(fs.readFileSync(path.join(root,"test/fixtures/current-tooling.gia"),"utf8"));
+  assert.equal(tree.rootNode.hasError,false,tree.rootNode.toString());
+  for (const file of fs.readdirSync(path.join(root,"queries")).filter(name => name.endsWith(".scm"))) {
+    const query = new Parser.Query(Gia,fs.readFileSync(path.join(root,"queries",file),"utf8"));
+    assert.ok(query.captures(tree.rootNode).length > 0,file);
+  }
+});
 
 test("nominal schema projections retain source types and field-name selectors", () => {
   const parser = new Parser(); parser.setLanguage(Gia);
@@ -78,4 +91,30 @@ test("effect parameters remain unsupported in data owners and higher-rank arrows
     "struct Bad<effect E> {}", "trait Bad<effect E> {}", "impl<effect E> Store {}",
     "fn bad(callback: fn<effect E>() -> Unit effects E) {}", "effect Disk", "fn bad() effects {Disk} {}",
   ]) assert.equal(parser.parse(source).rootNode.hasError, true, source);
+});
+
+
+test("generic qualified bounds and tuple grouping match compiler syntax", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  const tree = parser.parse("fn convert<T, U>(value:T) where T: std::convert::From<(U,)> & Marker -> ((U,)) { value } type Empty=(); type Scalar=(u64); type Single=(u64,); type Pair=(u64,bool);");
+  assert.equal(tree.rootNode.hasError, false, tree.rootNode.toString());
+  assert.equal(tree.rootNode.descendantsOfType("trait_bound")[0].childForFieldName("name").text, "std::convert::From");
+  assert.equal(tree.rootNode.descendantsOfType("parenthesized_type").length, 2);
+  assert.equal(tree.rootNode.descendantsOfType("tuple_type").length, 5);
+  for (const source of ["type Bad=(u64,,);", "fn bad<T>() where T:From<> {}", "fn bad<T>() where T:From<u64 {}"])
+    assert.equal(parser.parse(source).rootNode.hasError, true, source);
+});
+
+
+test("unit values, grouped patterns, typed closures and JSON field attributes remain current", () => {
+  const parser = new Parser(); parser.setLanguage(Gia);
+  for (const source of [
+    'fn main()->() {let ()=(); case () {()=>()}}',
+    'fn narrow(value:u64 | bool)->u64 {case value {n:u64=>n,_=>0}}',
+    'fn main()->bool {let f=fn(value:String)->bool {value=="ok"};f("ok")}',
+    '@derive(New,JsonTmp) @json_tmp(casing:camel) struct Source<T>{@json_tmp(rename:"wire") value:T,@json_tmp(default) count:u64} @derive(JsonTmp) struct Selected<T>=Pick<Source<T>,"value">;',
+    'fn main()->u64 {let (value)=42;value}',
+  ]) assert.equal(parser.parse(source).rootNode.hasError,false,source);
+  for (const source of ['@json_tmp(rename:42) struct Invalid {}','@derive("New") struct Invalid {}','fn bad(value:(u64,bool)) {case value {(n:u64,_)=>n}}'])
+    assert.equal(parser.parse(source).rootNode.hasError,true,source);
 });

@@ -1,0 +1,44 @@
+// Shared native/WASM editor syntax gate; aligned with checked compiler fixtures.
+import std::io::{Console};
+import std::io::stdio::{println};
+type Empty = ();
+type Scalar = (u64);
+type Single = (u64,);
+trait Convert<T> { type Output; fn convert(self, value:T) -> Self::Output; }
+fn generic<T,U>(value:T) where T: Convert<(U,)> -> T { value }
+
+@derive(New, JsonTmp)
+@json_tmp(casing: camel)
+struct Source<T> {
+    @json_tmp(rename: "wire") value: T,
+    @json_tmp(default) count: u64,
+}
+@derive(New, JsonTmp)
+struct Selected<T> = Pick<Source<T>, "value">;
+
+actor trait API<T> {
+    reader read(self, value:T) -> T;
+    mutator write(self, value:T);
+}
+@derive(New)
+actor struct Worker { count:u64 }
+impl API<u64> for Worker {
+    reader read(self, value:u64) -> u64 { self.count + value }
+    mutator write(self, value:u64) { Self { ..self, count:value } }
+}
+impure fn use_actor(handle:ActorRef<API<u64>>) effects ActorRequest | Suspend {
+    let _ = impure handle <~ read(value:42);
+    let _ = impure handle ~> write(42);
+}
+impure fn create(root:Supervisor) effects ActorRequest {
+    let _ = impure Worker::spawn(root, count:42);
+}
+impure fn cleanup() effects Console {
+    let frozen = "done";
+    defer impure println(frozen);
+}
+fn narrow(value:u64 | bool) -> u64 {
+    case value { n:u64 => n, _ => 0 }
+}
+fn unit() -> () { let () = (); case () { () => () } }
+fn closure() -> bool { let f = fn(value:String) -> bool { value == "ok" }; f("ok") }

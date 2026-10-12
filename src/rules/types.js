@@ -8,7 +8,7 @@ module.exports = {
     seq("<", commaSep1(choice($.type_identifier, $.effect_parameter)), optional(","), ">"),
 
   _type_annotation: ($) =>
-    choice($.generic_type, $.named_type, $.function_type, $.tuple_type, $.union_type, $.intersection_type, $.difference_type, $.list_type),
+    choice($.generic_type, $.named_type, $.function_type, $.tuple_type, $.parenthesized_type, $.union_type, $.intersection_type, $.difference_type, $.list_type),
 
   union_type: ($) => prec.left(1, seq($._type_annotation, "|", $._type_annotation)),
   intersection_type: ($) => prec.left(2, seq($._type_annotation, "&", $._type_annotation)),
@@ -44,8 +44,13 @@ module.exports = {
       optional(field("effects", $.effect_clause))
     )),
 
-  tuple_type: ($) =>
-    seq("(", optional(seq(commaSep1($._type_annotation), optional(","))), ")"),
+  parenthesized_type: ($) => seq("(", $._type_annotation, ")"),
+
+  tuple_type: ($) => choice(
+    seq("(", ")"),
+    seq("(", $._type_annotation, ",", ")"),
+    seq("(", $._type_annotation, ",", commaSep1($._type_annotation), optional(","), ")")
+  ),
 
   where_clause: ($) => seq("where", commaSep1($.type_constraint)),
 
@@ -65,7 +70,10 @@ module.exports = {
       $.parenthesized_bound
     ),
 
-  trait_bound: ($) => choice($.type_identifier, $.identifier),
+  trait_bound: ($) => seq(
+    field("name", choice($.type_identifier, $.identifier, $.qualified_type_name)),
+    optional(seq("<", commaSep1($._type_annotation), optional(","), ">"))
+  ),
 
   intersection_bound: ($) =>
     prec.left(2, seq($._constraint_expr, "&", $._constraint_expr)),

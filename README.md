@@ -40,6 +40,16 @@ parser.setLanguage(Gia);
 
 The package also includes highlight, locals, and folds queries under `queries/`.
 
+## Syntax parity checks
+
+`npm run verify` regenerates the parser, builds the native binding and WASM,
+and tests both. Both bindings parse `test/fixtures/current-tooling.gia` and
+compile the shipped queries. That fixture covers generic trait bounds,
+grouped/unit/singleton types, schemas and JSON field attributes, typed closures,
+actor creation and sends with typed outcomes, explicit effects and cleanup.
+It is also checked against the Gia compiler when tooling is updated.
+Nested typed case patterns remain unsupported, matching the compiler.
+
 ## Tagged releases
 
 Tags must exactly match the version in `package.json`. Stable releases publish to

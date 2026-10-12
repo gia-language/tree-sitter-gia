@@ -35,12 +35,14 @@
 
 ; Case arm bindings
 (case_arm pattern: (identifier) @local.definition)
+(type_binding_pattern name: (identifier) @local.definition)
+(parenthesized_pattern (identifier) @local.definition)
 
 ; Function parameters
 (parameter name: (identifier) @local.definition)
 
 ; Closure parameters
-(closure_expression (identifier) @local.definition)
+(closure_parameter pattern: (identifier) @local.definition)
 
 ; ---------------------------------------------------------------------------
 ; References

@@ -8,6 +8,8 @@ module.exports = {
       $.identifier,
       $.variant_pattern,
       $.tuple_pattern,
+      $.unit_pattern,
+      $.parenthesized_pattern,
       $.list_pattern,
       $.struct_pattern,
     ),
@@ -32,6 +34,9 @@ module.exports = {
       field("name", choice($.type_identifier, $.qualified_pattern_name)),
       optional(seq("(", commaSep1($._pattern), optional(","), ")")),
     ),
+
+  unit_pattern: (_$) => seq("(", ")"),
+  parenthesized_pattern: ($) => seq("(", $._pattern, ")"),
 
   tuple_pattern: ($) =>
     seq(

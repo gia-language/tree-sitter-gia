@@ -87,6 +87,7 @@
 (named_type (type_identifier) @type)
 (generic_type name: (type_identifier) @type)
 (function_type "fn" @type.builtin)
+(type_parameters (type_identifier) @type.parameter)
 
 ((named_type (identifier) @type.builtin)
   (#any-of? @type.builtin
@@ -166,6 +167,8 @@
   callee: (field_expression name: (identifier) @function.method.call))
 (call_expression
   callee: (path_expression name: (identifier) @function.call))
+(send_expression
+  call: (call_expression callee: (identifier) @function.method.call))
 
 ; ---------------------------------------------------------------------------
 ; Variables & fields
@@ -177,6 +180,7 @@
 ; Parameters
 (parameter name: (identifier) @variable.parameter)
 (capability_parameter name: (identifier) @variable.parameter)
+(closure_parameter pattern: (identifier) @variable.parameter)
 
 ; Struct fields
 (struct_field name: (identifier) @variable.member)
@@ -217,6 +221,7 @@
 
 (attribute "@" @attribute)
 (attribute name: (identifier) @attribute)
+(attribute_argument name: [(identifier) (type_identifier)] @attribute)
 
 ; ---------------------------------------------------------------------------
 ; Literals

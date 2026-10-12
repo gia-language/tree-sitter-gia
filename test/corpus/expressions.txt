@@ -285,7 +285,8 @@ fn f() {
         arguments: (argument_list
           (positional_argument
             (closure_expression
-              (identifier)
+              (closure_parameter
+                pattern: (identifier))
               body: (block
                 value: (binary_expression
                   (identifier)
@@ -311,7 +312,8 @@ fn f() {
         arguments: (argument_list
           (positional_argument
             (closure_expression
-              (tuple_pattern (identifier) (identifier))
+              (closure_parameter
+                pattern: (tuple_pattern (identifier) (identifier)))
               body: (block value: (identifier)))))))))
 
 ================================================================================

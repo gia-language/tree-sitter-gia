@@ -99,6 +99,7 @@ module.exports = {
       $.break_expression,
       $.continue_expression,
       $.parenthesized_expression,
+      $.unit_expression,
       $.tuple_expression
     ),
 
@@ -232,11 +233,14 @@ module.exports = {
     seq(
       "fn",
       "(",
-      commaSep($._pattern),
+      commaSep($.closure_parameter),
       optional(","),
       ")",
+      optional(seq("->", field("return_type", $._type_annotation))),
       field("body", $.block)
     ),
+
+  closure_parameter: ($) => seq(field("pattern", $._pattern), optional(seq(":", field("type", $._type_annotation)))),
 
   if_expression: ($) =>
     seq(
@@ -284,6 +288,8 @@ module.exports = {
   continue_expression: (_$) => "continue",
 
   parenthesized_expression: ($) => seq("(", $._expression, ")"),
+
+  unit_expression: (_$) => seq("(", ")"),
 
   tuple_expression: ($) =>
     seq(

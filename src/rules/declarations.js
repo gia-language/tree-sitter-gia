@@ -7,10 +7,15 @@ module.exports = {
   attribute_arguments: ($) =>
     seq(
       "(",
-      commaSep(choice($.identifier, $.type_identifier)),
+      commaSep($.attribute_argument),
       optional(","),
       ")"
     ),
+
+  attribute_argument: ($) => seq(
+    field("name", choice($.identifier, $.type_identifier)),
+    optional(seq(":", field("value", choice($.identifier, $.type_identifier, $.string_literal))))
+  ),
 
   import_declaration: ($) =>
     seq(
@@ -120,6 +125,7 @@ module.exports = {
 
   struct_field: ($) =>
     seq(
+      repeat($.attribute),
       field("name", $.identifier),
       ":",
       field("type", $._type_annotation)
@@ -141,10 +147,11 @@ module.exports = {
 
   _enum_variant: ($) => choice($.unit_variant, $.tuple_variant),
 
-  unit_variant: ($) => field("name", $.type_identifier),
+  unit_variant: ($) => seq(repeat($.attribute), field("name", $.type_identifier)),
 
   tuple_variant: ($) =>
     seq(
+      repeat($.attribute),
       field("name", $.type_identifier),
       "(",
       commaSep1($._type_annotation),

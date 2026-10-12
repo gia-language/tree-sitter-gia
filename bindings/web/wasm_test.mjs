@@ -4,9 +4,23 @@ import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { Language, Parser } from "web-tree-sitter";
+import { Language, Parser, Query } from "web-tree-sitter";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+test("WASM uses the same current syntax fixture and shipped queries", async () => {
+  await Parser.init();
+  const language=await Language.load(await readFile(path.join(root,"tree-sitter-gia.wasm")));
+  const parser=new Parser();parser.setLanguage(language);
+  const tree=parser.parse(await readFile(path.join(root,"test/fixtures/current-tooling.gia"),"utf8"));
+  try {
+    assert.equal(tree.rootNode.hasError,false,tree.rootNode.toString());
+    for (const file of ["highlights.scm","locals.scm","folds.scm"]) {
+      const query=new Query(language,await readFile(path.join(root,"queries",file),"utf8"));
+      try { assert.ok(query.captures(tree.rootNode).length > 0,file); } finally { query.delete(); }
+    }
+  } finally {tree.delete();parser.delete();}
+});
 
 test("WASM recognizes nominal schemas without admitting malformed selectors", async () => {
   await Parser.init(); const parser = new Parser(); parser.setLanguage(await Language.load(await readFile(path.join(root, "tree-sitter-gia.wasm"))));

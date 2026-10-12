@@ -144,7 +144,7 @@ fn process<T>(items: List<T>) where T: Display with log: Logger -> String {
       (type_constraint
         parameter: (type_identifier)
         bound: (trait_bound
-          (type_identifier))))
+          name: (type_identifier))))
     with_clause: (with_clause
       (capability_parameter
         name: (identifier)
@@ -196,8 +196,10 @@ pub struct Task {
     (attribute
       name: (identifier)
       (attribute_arguments
-        (type_identifier)
-        (type_identifier)))
+        (attribute_argument
+          name: (type_identifier))
+        (attribute_argument
+          name: (type_identifier))))
     (visibility_modifier)
     name: (type_identifier)
     (struct_field
@@ -626,7 +628,7 @@ type Callback = fn(i64 | bool) -> i64 | bool;
             (named_type
               (identifier))))))
     (difference_type
-      (tuple_type
+      (parenthesized_type
         (union_type
           (named_type
             (identifier))
