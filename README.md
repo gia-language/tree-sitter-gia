@@ -64,3 +64,17 @@ for the shared release policy and historical failure evidence.
 Run `node --test scripts/check-release.test.mjs` for the release guard tests. The
 WASM smoke test checks local rebinding and loop syntax, so a stale pre-migration
 binary cannot pass by parsing only a trivial function.
+
+## 0.2.0 editor migration
+
+The grammar matches the current compiler's type/effect rows, generic trait bounds,
+field/variant attributes, named JSON arguments, typed closures and actor syntax.
+Grouping, unit and singleton tuples are represented separately. Consumers that
+inspect concrete nodes should update their grouping/tuple captures and use this
+release's shipped highlight query rather than an older copied query.
+
+Both native and WASM bindings verify the same current-syntax fixture. Qualified enum
+patterns and grouped/unit patterns are supported; nested typed case patterns remain
+unsupported, matching the compiler. The package exposes the native binding, WASM
+path and highlight query through its existing exports. Zed's current source revision
+pins the equivalent checked grammar source independently of the npm version.
